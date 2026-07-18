@@ -333,6 +333,23 @@ input,select{font-family:inherit}
 }
 #toast.show{transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ====== 全螢幕切換按鈕(網頁中央下方浮動) ====== */
+#fsBtn{
+  position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);z-index:90;
+  display:flex;align-items:center;gap:8px;
+  padding:11px 22px;font-size:16.5px;font-weight:700;letter-spacing:.15em;
+  color:var(--neon);background:rgba(3,10,5,.9);
+  border:2px solid var(--neon);
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+  box-shadow:0 0 12px rgba(53,232,58,.5);
+  backdrop-filter:blur(2px);transition:transform .08s,background .12s;
+}
+#fsBtn .fsIco{font-size:21px;line-height:1}
+#fsBtn:active{transform:translateX(-50%) scale(.95);background:var(--neon);color:#031006}
+/* 對戰畫面隱藏,避免蓋到中央控制按鈕 */
+body[data-screen="battle"] #fsBtn{display:none}
 </style>
 </head>
 <body>
@@ -509,6 +526,8 @@ input,select{font-family:inherit}
 </div>
 
 <div id="toast"></div>
+
+<button id="fsBtn" type="button" aria-label="切換全螢幕"><span class="fsIco">⛶</span><span class="fsTxt">全螢幕</span></button>
 
 <script>
 /* ============================================================
@@ -1070,6 +1089,7 @@ document.getElementById('clearLogBtn').addEventListener('click',async()=>{
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  document.body.dataset.screen=id;
   window.scrollTo(0,0);
 }
 /* 自製確認視窗(Promise 版,取代被沙箱擋掉的 window.confirm) */
@@ -1096,6 +1116,29 @@ function toast(msg){
   t.textContent=msg;t.classList.add('show');
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200);
 }
+/* ====== 全螢幕切換 ====== */
+(function(){
+  const btn=document.getElementById('fsBtn');
+  const txt=btn.querySelector('.fsTxt'), ico=btn.querySelector('.fsIco');
+  const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+  function enter(){
+    const el=document.documentElement;
+    (el.requestFullscreen||el.webkitRequestFullscreen||el.webkitRequestFullScreen||(()=>{})).call(el);
+  }
+  function exit(){
+    (document.exitFullscreen||document.webkitExitFullscreen||(()=>{})).call(document);
+  }
+  btn.addEventListener('click',()=>{fsEl()?exit():enter()});
+  function sync(){
+    const on=!!fsEl();
+    txt.textContent=on?'結束全螢幕':'全螢幕';
+    ico.textContent=on?'✕':'⛶';
+  }
+  document.addEventListener('fullscreenchange',sync);
+  document.addEventListener('webkitfullscreenchange',sync);
+  sync();
+})();
+
 document.getElementById('startBtn').addEventListener('click',newMatch);
 document.getElementById('gotoLog').addEventListener('click',()=>{renderLog();showScreen('log')});
 document.getElementById('logHomeBtn').addEventListener('click',()=>showScreen('setup'));
