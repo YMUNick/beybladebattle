@@ -44,9 +44,14 @@
 
 ---
 
+## 全螢幕 / 安裝
+- 網頁底部中央有 **全螢幕按鈕**（Android Chrome、電腦、iPad 直接可用）。
+- **iPhone Safari**：Safari 不支援網頁全螢幕 API，請用 **分享 → 加入主畫面**，之後從主畫面圖示開啟即為全螢幕（已內建 PWA 設定與圖示）。
+
 ## 技術說明
-- 純前端單檔（HTML + CSS + JavaScript），無後端、無建置流程。
+- 純前端（HTML + CSS + JavaScript），無後端、無建置流程。
 - 陀螺資料於載入時從天梯資料庫即時抓取。
+- 提供 PWA manifest 與圖示，支援「加入主畫面」全螢幕開啟。
 - 部署於 GitHub Pages。
 
 ## 本機執行

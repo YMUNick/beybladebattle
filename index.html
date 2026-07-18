@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#050505">
+<!-- PWA / 加入主畫面(iOS 亦可全螢幕) -->
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="陀螺對戰">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <title>BEYBLADE X 對戰計分板</title>
 <style>
 :root{
@@ -350,6 +358,8 @@ input,select{font-family:inherit}
 #fsBtn:active{transform:translateX(-50%) scale(.95);background:var(--neon);color:#031006}
 /* 對戰畫面隱藏,避免蓋到中央控制按鈕 */
 body[data-screen="battle"] #fsBtn{display:none}
+/* 已用「加入主畫面」全螢幕開啟時,不需要這顆按鈕 */
+@media (display-mode:standalone),(display-mode:fullscreen){#fsBtn{display:none}}
 </style>
 </head>
 <body>

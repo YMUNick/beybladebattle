@@ -1,0 +1,26 @@
+{
+  "name": "BEYBLADE X 對戰計分板",
+  "short_name": "陀螺對戰",
+  "description": "戰鬥陀螺 BEYBLADE X 對戰即時計分板",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#050705",
+  "theme_color": "#050705",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
