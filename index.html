@@ -145,7 +145,7 @@ input,select{font-family:inherit}
   align-items:center;gap:clamp(6px,1.6vw,18px);
   padding:clamp(6px,1.5vmin,14px) 0;
 }
-.fincol{display:flex;flex-direction:column;gap:clamp(6px,1.4vmin,12px)}
+.fincol{display:flex;flex-direction:column;gap:clamp(6px,1.4vmin,12px);align-self:stretch;justify-content:center}
 .fbtn{
   position:relative;display:flex;align-items:center;gap:8px;
   border:2px solid var(--neon);color:var(--neon);
@@ -177,7 +177,7 @@ input,select{font-family:inherit}
   display:flex;align-items:center;justify-content:center;
   position:relative;background:rgba(2,13,6,.55);
   box-shadow:var(--neon-glow),inset 0 0 22px rgba(53,232,58,.12);
-  transition:transform .12s;cursor:pointer;
+  transition:transform .12s;
 }
 .scorebox.bump{transform:scale(1.12)}
 .scorebox .digit{
@@ -191,15 +191,22 @@ input,select{font-family:inherit}
   box-shadow:var(--neon-glow);
 }
 .scorelabel{font-size:clamp(12px,3vw,16.5px);letter-spacing:.55em;text-indent:.55em;color:var(--neon);text-shadow:0 0 6px rgba(53,232,58,.6)}
-/* READY 覆蓋 */
-.scorebox .readycover{
-  position:absolute;inset:0;border-radius:15px;
+/* READY 按鈕(每側 SPIN 上方,填滿空白區) */
+.readybtn{
+  flex:1;width:100%;min-height:56px;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  background:rgba(2,15,7,.88);color:var(--neon);
-  font-size:clamp(15px,3.6vw,21px);font-weight:700;letter-spacing:.28em;text-indent:.28em;
-  line-height:1.7;animation:pulse 1.1s infinite;
+  border:2px solid var(--neon);color:var(--neon);
+  background:rgba(2,15,7,.88);
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+  filter:drop-shadow(0 0 4px rgba(53,232,58,.45));
+  font-weight:900;font-size:clamp(16px,4vw,26px);letter-spacing:.28em;text-indent:.28em;
+  line-height:1.5;
+  animation:pulse 1.1s infinite;
+  transition:background .1s,transform .08s;
 }
-.scorebox.ready .readycover{animation:none;background:rgba(53,232,58,.92);color:#031006;letter-spacing:.2em}
+.readybtn.ready{animation:none;background:rgba(53,232,58,.92);color:#031006;letter-spacing:.2em;text-indent:.2em;box-shadow:0 0 16px rgba(53,232,58,.6);filter:drop-shadow(0 0 10px rgba(53,232,58,.7))}
+.readybtn:active{transform:scale(.96)}
+.readybtn[hidden]{display:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 .midtris{display:flex;gap:6px;align-items:center}
 .midtris span{width:0;height:0;border-top:clamp(9px,2.4vw,16px) solid transparent;border-bottom:clamp(9px,2.4vw,16px) solid transparent}
@@ -267,6 +274,7 @@ input,select{font-family:inherit}
   .fbtn .fpts{font-size:clamp(14px,4.2vw,19px)}
   .fbtn.xtreme{border-width:2px}
   .fbtn.xtreme .fname{font-size:clamp(12px,3.6vw,16px)}
+  .readybtn{min-height:44px;font-size:clamp(12px,3.6vw,18px);letter-spacing:.12em;text-indent:.12em;border-width:2px}
   /* 中央分數縮小,把寬度讓給兩側決勝按鈕 */
   .scorepair{gap:4px}
   .scorebox{width:clamp(52px,15vw,84px);border-width:2px}
@@ -444,6 +452,7 @@ body[data-screen="battle"] #fsBtn{display:none}
     <div class="mainrow">
       <!-- 左側決勝按鈕 -->
       <div class="fincol left">
+        <button class="readybtn" id="ready1">TAP TO<br>READY</button>
         <button class="fbtn" data-p="1" data-f="迴轉勝" data-pt="1"><span><span class="fname">SPIN</span><br><span class="fsub">Finish・迴轉勝</span></span><span class="fpts">+1</span></button>
         <button class="fbtn" data-p="1" data-f="場外勝" data-pt="2"><span><span class="fname">OVER</span><br><span class="fsub">Finish・場外勝</span></span><span class="fpts">+2</span></button>
         <button class="fbtn" data-p="1" data-f="爆烈勝" data-pt="2"><span><span class="fname">BURST</span><br><span class="fsub">Finish・爆烈勝</span></span><span class="fpts">+2</span></button>
@@ -456,7 +465,6 @@ body[data-screen="battle"] #fsBtn{display:none}
           <div class="scoreunit">
             <div class="scorebox" id="sb1">
               <div class="digit zero" id="score1">0</div>
-              <div class="readycover" id="ready1">TAP TO<br>READY</div>
             </div>
             <div class="scorelabel">SCORE</div>
           </div>
@@ -464,7 +472,6 @@ body[data-screen="battle"] #fsBtn{display:none}
           <div class="scoreunit">
             <div class="scorebox" id="sb2">
               <div class="digit zero" id="score2">0</div>
-              <div class="readycover" id="ready2">TAP TO<br>READY</div>
             </div>
             <div class="scorelabel">SCORE</div>
           </div>
@@ -491,6 +498,7 @@ body[data-screen="battle"] #fsBtn{display:none}
 
       <!-- 右側決勝按鈕 -->
       <div class="fincol right">
+        <button class="readybtn" id="ready2">TAP TO<br>READY</button>
         <button class="fbtn" data-p="2" data-f="迴轉勝" data-pt="1"><span><span class="fname">SPIN</span><br><span class="fsub">迴轉勝・Finish</span></span><span class="fpts">+1</span></button>
         <button class="fbtn" data-p="2" data-f="場外勝" data-pt="2"><span><span class="fname">OVER</span><br><span class="fsub">場外勝・Finish</span></span><span class="fpts">+2</span></button>
         <button class="fbtn" data-p="2" data-f="爆烈勝" data-pt="2"><span><span class="fname">BURST</span><br><span class="fsub">爆烈勝・Finish</span></span><span class="fpts">+2</span></button>
@@ -844,25 +852,27 @@ function startTimer(){
 function armReady(){
   roundLive=false;
   readyState=[false,false];
-  document.getElementById('ready1').style.display='flex';
-  document.getElementById('ready2').style.display='flex';
-  document.getElementById('sb1').classList.remove('ready');
-  document.getElementById('sb2').classList.remove('ready');
+  for(const i of [1,2]){
+    const rb=document.getElementById('ready'+i);
+    rb.hidden=false;
+    rb.classList.remove('ready');
+    rb.innerHTML='TAP TO<br>READY';
+  }
   setBtnsEnabled(false);
 }
 function setBtnsEnabled(on){
   document.querySelectorAll('.fbtn').forEach(b=>b.toggleAttribute('disabled',!on));
   document.getElementById('drawBtn').toggleAttribute('disabled',!on);
 }
-document.getElementById('sb1').addEventListener('click',()=>tapReady(0));
-document.getElementById('sb2').addEventListener('click',()=>tapReady(1));
+document.getElementById('ready1').addEventListener('click',()=>tapReady(0));
+document.getElementById('ready2').addEventListener('click',()=>tapReady(1));
 function tapReady(i){
   if(roundLive||!M||readyState[i])return;
   readyState[i]=true;
   sfx.ready();
-  const sb=document.getElementById('sb'+(i+1));
-  sb.classList.add('ready');
-  document.getElementById('ready'+(i+1)).textContent="READY!";
+  const rb=document.getElementById('ready'+(i+1));
+  rb.classList.add('ready');
+  rb.innerHTML="READY!";
   if(readyState[0]&&readyState[1])startCountdown();
 }
 
@@ -891,8 +901,8 @@ function startCountdown(){
   setTimeout(()=>{
     ov.classList.remove('show');
     roundLive=true;
-    document.getElementById('ready1').style.display='none';
-    document.getElementById('ready2').style.display='none';
+    document.getElementById('ready1').hidden=true;
+    document.getElementById('ready2').hidden=true;
     setBtnsEnabled(true);
     startTimer();
   },5700);
