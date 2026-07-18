@@ -141,7 +141,7 @@ input,select{font-family:inherit}
 
 /* 主格線:左按鈕 | 中央 | 右按鈕 */
 .mainrow{
-  flex:1;display:grid;grid-template-columns:1fr auto 1fr;
+  flex:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
   align-items:center;gap:clamp(6px,1.6vw,18px);
   padding:clamp(6px,1.5vmin,14px) 0;
 }
@@ -256,17 +256,17 @@ input,select{font-family:inherit}
 
 /* ====== 手機直向:對戰面板自適應縮放,完整塞入不被截斷 ====== */
 @media (max-width:600px){
-  /* 讓格線/彈性子項可縮小,避免內容撐破螢幕被 overflow-x 裁掉 */
-  .mainrow{gap:5px}
+  /* 兩側決勝按鈕欄用固定寬度(隨螢幕縮放),中央彈性,避免內容撐破螢幕被 overflow-x 裁掉 */
+  .mainrow{gap:5px;grid-template-columns:clamp(80px,26vw,116px) minmax(0,1fr) clamp(80px,26vw,116px)}
   .mainrow>*{min-width:0}
   .fincol{min-width:0;gap:6px}
-  .fbtn{min-width:0;padding:6px 8px;gap:4px;min-height:38px}
-  .fbtn>span:first-child{min-width:0;overflow:hidden}
-  .fbtn .fname{font-size:clamp(13px,4.4vw,18px)}
-  .fbtn .fsub{font-size:clamp(8px,2.5vw,11px);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .fbtn .fpts{font-size:clamp(14px,4.6vw,20px)}
+  .fbtn{min-width:0;padding:7px 6px;gap:3px;min-height:40px}
+  .fbtn>span:first-child{min-width:0;flex:1;overflow:hidden}
+  .fbtn .fname{font-size:clamp(12px,3.6vw,16px);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fbtn .fsub{display:none}  /* 手機空間有限,隱藏中文副標,主標籤(SPIN/OVER…)完整顯示 */
+  .fbtn .fpts{font-size:clamp(14px,4.2vw,19px)}
   .fbtn.xtreme{border-width:2px}
-  .fbtn.xtreme .fname{font-size:clamp(14px,4.8vw,20px)}
+  .fbtn.xtreme .fname{font-size:clamp(12px,3.6vw,16px)}
   /* 中央分數縮小,把寬度讓給兩側決勝按鈕 */
   .scorepair{gap:4px}
   .scorebox{width:clamp(52px,15vw,84px);border-width:2px}
