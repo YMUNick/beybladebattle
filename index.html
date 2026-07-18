@@ -287,10 +287,10 @@ input,select{font-family:inherit}
 @keyframes triPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 #cdText{
   font-weight:900;font-style:italic;text-align:center;line-height:1;
-  font-size:clamp(180px,63vw,570px);
+  font-size:clamp(120px,42vw,380px);
   animation:cdpop .28s cubic-bezier(.2,1.8,.4,1);
 }
-#cdText.goshoot{font-size:clamp(69px,21vw,225px);letter-spacing:.02em}
+#cdText.goshoot{font-size:clamp(46px,14vw,150px);letter-spacing:.02em}
 @keyframes cdpop{from{transform:scale(2.4);opacity:0}to{transform:scale(1);opacity:1}}
 
 /* ====== 勝利 ====== */
@@ -342,10 +342,10 @@ input,select{font-family:inherit}
 #toast.show{transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* ====== 全螢幕切換按鈕(網頁中央下方浮動) ====== */
+/* ====== 全螢幕切換按鈕(首頁右下角浮動) ====== */
 #fsBtn{
-  position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);z-index:90;
+  position:fixed;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));
+  z-index:90;
   display:flex;align-items:center;gap:8px;
   padding:11px 22px;font-size:16.5px;font-weight:700;letter-spacing:.15em;
   color:var(--neon);background:rgba(3,10,5,.9);
@@ -355,7 +355,7 @@ input,select{font-family:inherit}
   backdrop-filter:blur(2px);transition:transform .08s,background .12s;
 }
 #fsBtn .fsIco{font-size:21px;line-height:1}
-#fsBtn:active{transform:translateX(-50%) scale(.95);background:var(--neon);color:#031006}
+#fsBtn:active{transform:scale(.95);background:var(--neon);color:#031006}
 /* 對戰畫面隱藏,避免蓋到中央控制按鈕 */
 body[data-screen="battle"] #fsBtn{display:none}
 /* 已用「加入主畫面」全螢幕開啟時,不需要這顆按鈕 */
