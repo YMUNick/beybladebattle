@@ -223,7 +223,7 @@ input,select{font-family:inherit}
 
 /* 底部陀螺 */
 .botrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:6px}
-.beyslot{display:flex;flex-direction:column;gap:5px;min-width:0}
+.beyslot{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
 .beyslot.right{align-items:flex-end}
 .beycard{
   display:flex;align-items:center;gap:8px;max-width:100%;
@@ -231,7 +231,7 @@ input,select{font-family:inherit}
   padding:5px 10px;
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
 }
-.beycard img,.beycard svg{width:clamp(46px,12vw,72px);height:clamp(46px,12vw,72px);object-fit:contain;border-radius:50%;background:#04170c;flex:0 0 auto;border:2px solid var(--neon-dim);box-shadow:0 0 10px rgba(53,232,58,.35)}
+.beycard img,.beycard svg{width:clamp(92px,24vw,144px);height:clamp(92px,24vw,144px);object-fit:contain;border-radius:50%;background:#04170c;flex:0 0 auto;border:2px solid var(--neon-dim);box-shadow:0 0 10px rgba(53,232,58,.35)}
 .beycard .bn{font-size:clamp(11px,2.7vw,14px);font-weight:700;color:var(--neon);text-shadow:0 0 6px rgba(53,232,58,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .beycard .bt{font-size:9px;color:#9adf9f;letter-spacing:.1em}
 .deckdots{display:flex;gap:5px;flex-wrap:wrap}
