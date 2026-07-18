@@ -38,11 +38,11 @@ input,select{font-family:inherit}
 /* ====== 頂部標題 ====== */
 .brand{
   text-align:center;padding:14px 8px 6px;
-  font-weight:900;letter-spacing:.18em;font-size:clamp(18px,4.5vw,26px);
+  font-weight:900;letter-spacing:.18em;font-size:clamp(27px,6.75vw,39px);
   font-style:italic;
 }
-.brand .x{color:var(--neon);text-shadow:var(--neon-glow);font-size:1.25em}
-.brand small{display:block;font-style:normal;font-weight:400;letter-spacing:.5em;font-size:.42em;color:var(--neon-dim);margin-top:2px}
+.brand .x{color:var(--neon);text-shadow:var(--neon-glow);font-size:1.875em}
+.brand small{display:block;font-style:normal;font-weight:400;letter-spacing:.5em;font-size:0.63em;color:var(--neon-dim);margin-top:2px}
 
 /* ====== 設定畫面 ====== */
 #setup{padding:0 14px 30px;max-width:980px;margin:0 auto;width:100%}
@@ -55,25 +55,25 @@ input,select{font-family:inherit}
   padding:16px 14px 18px;
 }
 .pcard h3{
-  font-size:13px;letter-spacing:.35em;color:var(--neon);
+  font-size:19.5px;letter-spacing:.35em;color:var(--neon);
   border-bottom:1px solid var(--neon-dim);padding-bottom:8px;margin-bottom:12px;
   text-shadow:var(--neon-glow);
 }
 .field{margin-bottom:12px}
-.field label{display:block;font-size:11px;letter-spacing:.2em;color:#9adf9f;margin-bottom:5px}
+.field label{display:block;font-size:16.5px;letter-spacing:.2em;color:#9adf9f;margin-bottom:5px}
 .field input,.field select{
-  width:100%;padding:10px 12px;font-size:15px;
+  width:100%;padding:10px 12px;font-size:22.5px;
   background:#020a05;border:1px solid var(--neon-dim);color:var(--white);
   outline:none;border-radius:2px;
 }
 .field input:focus,.field select:focus{border-color:var(--neon);box-shadow:0 0 8px rgba(53,232,58,.4)}
 .deck-slot{display:grid;grid-template-columns:1fr 92px;gap:6px;margin-bottom:8px}
-.deck-slot select,.deck-slot input{min-width:0;padding:9px 10px;font-size:14px;background:#020a05;border:1px solid var(--neon-dim);color:var(--white);outline:none;border-radius:2px}
-.hint{font-size:11px;color:#6fae76;margin-top:4px;line-height:1.6}
+.deck-slot select,.deck-slot input{min-width:0;padding:9px 10px;font-size:21px;background:#020a05;border:1px solid var(--neon-dim);color:var(--white);outline:none;border-radius:2px}
+.hint{font-size:16.5px;color:#6fae76;margin-top:4px;line-height:1.6}
 .bigbtn{
   display:block;width:min(420px,90%);margin:26px auto 0;
   padding:15px 0;text-align:center;
-  font-size:clamp(16px,4vw,20px);font-weight:900;letter-spacing:.4em;text-indent:.4em;
+  font-size:clamp(24px,6vw,30px);font-weight:900;letter-spacing:.4em;text-indent:.4em;
   color:#031006;background:var(--neon);
   clip-path:polygon(18px 0,100% 0,calc(100% - 18px) 100%,0 100%);
   box-shadow:0 0 14px rgba(53,232,58,.55),inset 0 0 0 2px #baffbe;
@@ -82,16 +82,16 @@ input,select{font-family:inherit}
 .bigbtn:active{transform:scale(.97)}
 .subbtns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 .ghostbtn{
-  padding:9px 18px;font-size:12px;letter-spacing:.15em;
+  padding:9px 18px;font-size:18px;letter-spacing:.15em;
   border:1px solid var(--neon-dim);color:#9adf9f;
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
 }
 .ghostbtn:hover{border-color:var(--neon);color:var(--neon)}
-#loadStatus{text-align:center;font-size:12px;color:#6fae76;margin:8px 0 2px;letter-spacing:.1em}
+#loadStatus{text-align:center;font-size:18px;color:#6fae76;margin:8px 0 2px;letter-spacing:.1em}
 #loadStatus.err{color:var(--danger)}
 .format-row{display:flex;gap:10px;justify-content:center;margin-top:16px}
 .fmt{
-  padding:10px 22px;border:1px solid var(--neon-dim);letter-spacing:.15em;font-size:13px;color:#9adf9f;
+  padding:10px 22px;border:1px solid var(--neon-dim);letter-spacing:.15em;font-size:19.5px;color:#9adf9f;
   clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
 }
 .fmt.sel{background:var(--neon);color:#031006;font-weight:900;box-shadow:0 0 12px rgba(53,232,58,.5)}
@@ -118,7 +118,7 @@ input,select{font-family:inherit}
 .toprow{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:8px}
 .nameplate{
   background:var(--white);color:#0a0a0a;font-weight:900;
-  font-size:clamp(15px,4.2vw,26px);letter-spacing:.06em;
+  font-size:clamp(22.5px,6.3vw,39px);letter-spacing:.06em;
   padding:8px 12px;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
   box-shadow:0 0 10px rgba(53,232,58,.25);
@@ -126,10 +126,10 @@ input,select{font-family:inherit}
 .nameplate.p1{clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%);text-align:left}
 .nameplate.p2{clip-path:polygon(16px 0,100% 0,100% 100%,0 100%);text-align:right}
 .roundbox{text-align:center;min-width:86px}
-.roundbox .r{font-size:clamp(26px,7vw,42px);font-weight:900;font-style:italic}
+.roundbox .r{font-size:clamp(39px,10.5vw,63px);font-weight:900;font-style:italic}
 .roundbox .r b{color:var(--neon);text-shadow:var(--neon-glow)}
-.roundbox .timer{font-family:var(--font-num);font-size:clamp(12px,3vw,16px);color:#bfe8c2;letter-spacing:.15em}
-.roundbox .target-note{font-size:10px;color:#6fae76;letter-spacing:.15em;margin-top:2px}
+.roundbox .timer{font-family:var(--font-num);font-size:clamp(18px,4.5vw,24px);color:#bfe8c2;letter-spacing:.15em}
+.roundbox .target-note{font-size:15px;color:#6fae76;letter-spacing:.15em;margin-top:2px}
 
 /* 主格線:左按鈕 | 中央 | 右按鈕 */
 .mainrow{
@@ -148,13 +148,13 @@ input,select{font-family:inherit}
   transition:background .08s,transform .08s;
   min-height:44px;
 }
-.fbtn .fname{font-weight:900;font-size:clamp(13px,3.4vw,20px);letter-spacing:.04em;line-height:1}
-.fbtn .fsub{font-size:clamp(8px,1.9vw,11px);color:#9adf9f;letter-spacing:.08em}
-.fbtn .fpts{margin-left:auto;font-weight:900;font-size:clamp(14px,3.6vw,22px);font-style:italic}
+.fbtn .fname{font-weight:900;font-size:clamp(19.5px,5.1vw,30px);letter-spacing:.04em;line-height:1}
+.fbtn .fsub{font-size:clamp(12px,2.85vw,16.5px);color:#9adf9f;letter-spacing:.08em}
+.fbtn .fpts{margin-left:auto;font-weight:900;font-size:clamp(21px,5.4vw,33px);font-style:italic}
 .fincol.right .fbtn{flex-direction:row-reverse}
 .fincol.right .fbtn .fpts{margin-left:0;margin-right:auto}
 .fbtn.xtreme{border-width:3px;color:#7dff81;filter:drop-shadow(0 0 8px rgba(53,232,58,.8))}
-.fbtn.xtreme .fname{font-size:clamp(15px,4vw,24px)}
+.fbtn.xtreme .fname{font-size:clamp(22.5px,6vw,36px)}
 .fbtn:active{background:var(--neon);color:#031006;transform:scale(.96)}
 .fbtn:active .fsub,.fbtn:active .fpts{color:#031006}
 .fbtn[disabled]{opacity:.28;pointer-events:none}
@@ -174,7 +174,7 @@ input,select{font-family:inherit}
 .scorebox.bump{transform:scale(1.12)}
 .scorebox .digit{
   font-family:var(--font-num);font-weight:900;
-  font-size:clamp(44px,13vw,110px);line-height:1;color:var(--neon);
+  font-size:clamp(66px,19.5vw,165px);line-height:1;color:var(--neon);
   text-shadow:var(--neon-glow);position:relative;
 }
 .scorebox .digit.zero::after{
@@ -182,13 +182,13 @@ input,select{font-family:inherit}
   background:var(--neon);transform:rotate(-45deg);border-radius:4px;
   box-shadow:var(--neon-glow);
 }
-.scorelabel{font-size:clamp(8px,2vw,11px);letter-spacing:.55em;text-indent:.55em;color:var(--neon);text-shadow:0 0 6px rgba(53,232,58,.6)}
+.scorelabel{font-size:clamp(12px,3vw,16.5px);letter-spacing:.55em;text-indent:.55em;color:var(--neon);text-shadow:0 0 6px rgba(53,232,58,.6)}
 /* READY 覆蓋 */
 .scorebox .readycover{
   position:absolute;inset:0;border-radius:15px;
   display:flex;align-items:center;justify-content:center;text-align:center;
   background:rgba(2,15,7,.88);color:var(--neon);
-  font-size:clamp(10px,2.4vw,14px);font-weight:700;letter-spacing:.28em;text-indent:.28em;
+  font-size:clamp(15px,3.6vw,21px);font-weight:700;letter-spacing:.28em;text-indent:.28em;
   line-height:1.7;animation:pulse 1.1s infinite;
 }
 .scorebox.ready .readycover{animation:none;background:rgba(53,232,58,.92);color:#031006;letter-spacing:.2em}
@@ -199,7 +199,7 @@ input,select{font-family:inherit}
 .midtris .r{border-right:clamp(12px,3vw,20px) solid var(--white);filter:drop-shadow(0 0 4px rgba(255,255,255,.6))}
 
 .midbtn{
-  padding:7px 26px;font-size:clamp(11px,2.8vw,14px);letter-spacing:.3em;text-indent:.3em;
+  padding:7px 26px;font-size:clamp(16.5px,4.2vw,21px);letter-spacing:.3em;text-indent:.3em;
   color:#0a0a0a;background:#cfd6cf;font-weight:700;
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
 }
@@ -208,14 +208,14 @@ input,select{font-family:inherit}
 /* 發射失敗 */
 .failrow{display:flex;gap:clamp(10px,4vw,28px);align-items:flex-start}
 .failunit{text-align:center}
-.failunit .flab{font-size:9px;color:#9adf9f;letter-spacing:.2em;margin-bottom:3px}
+.failunit .flab{font-size:13.5px;color:#9adf9f;letter-spacing:.2em;margin-bottom:3px}
 .faildots{display:flex;gap:5px;justify-content:center;padding:5px 9px;border:1px solid var(--neon-dim);cursor:pointer;
   clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .faildots i{width:10px;height:10px;border:1px solid var(--neon);border-radius:2px;display:block}
 .faildots i.on{background:var(--danger);border-color:var(--danger);box-shadow:0 0 6px rgba(255,77,94,.8)}
 .smallbtns{display:flex;gap:8px}
 .ctrl{
-  padding:7px 16px;font-size:11px;letter-spacing:.25em;text-indent:.25em;
+  padding:7px 16px;font-size:16.5px;letter-spacing:.25em;text-indent:.25em;
   border:1px solid var(--neon-dim);color:#cdeacd;background:rgba(4,23,12,.85);
   clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
 }
@@ -232,13 +232,13 @@ input,select{font-family:inherit}
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
 }
 .beycard img,.beycard svg{width:clamp(92px,24vw,144px);height:clamp(92px,24vw,144px);object-fit:contain;border-radius:50%;background:#04170c;flex:0 0 auto;border:2px solid var(--neon-dim);box-shadow:0 0 10px rgba(53,232,58,.35)}
-.beycard .bn{font-size:clamp(11px,2.7vw,14px);font-weight:700;color:var(--neon);text-shadow:0 0 6px rgba(53,232,58,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.beycard .bt{font-size:9px;color:#9adf9f;letter-spacing:.1em}
+.beycard .bn{font-size:clamp(16.5px,4.05vw,21px);font-weight:700;color:var(--neon);text-shadow:0 0 6px rgba(53,232,58,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.beycard .bt{font-size:13.5px;color:#9adf9f;letter-spacing:.1em}
 .deckdots{display:flex;gap:5px;flex-wrap:wrap}
 .beyslot.right .deckdots{justify-content:flex-end}
 .deckdots button{
   display:flex;align-items:center;gap:5px;
-  font-size:10px;padding:3px 8px 3px 4px;border:1px solid var(--neon-dim);color:#9adf9f;
+  font-size:15px;padding:3px 8px 3px 4px;border:1px solid var(--neon-dim);color:#9adf9f;
   max-width:130px;white-space:nowrap;overflow:hidden;
 }
 .deckdots button span{overflow:hidden;text-overflow:ellipsis}
@@ -279,10 +279,10 @@ input,select{font-family:inherit}
 @keyframes triPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 #cdText{
   font-weight:900;font-style:italic;text-align:center;line-height:1;
-  font-size:clamp(120px,42vw,380px);
+  font-size:clamp(180px,63vw,570px);
   animation:cdpop .28s cubic-bezier(.2,1.8,.4,1);
 }
-#cdText.goshoot{font-size:clamp(46px,14vw,150px);letter-spacing:.02em}
+#cdText.goshoot{font-size:clamp(69px,21vw,225px);letter-spacing:.02em}
 @keyframes cdpop{from{transform:scale(2.4);opacity:0}to{transform:scale(1);opacity:1}}
 
 /* ====== 勝利 ====== */
@@ -290,9 +290,9 @@ input,select{font-family:inherit}
 #victory.show{display:flex}
 .vbox{text-align:center;padding:30px 20px;animation:vin .4s cubic-bezier(.2,1.6,.4,1)}
 @keyframes vin{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
-.vbox .vt{font-size:clamp(13px,3vw,17px);letter-spacing:.6em;color:var(--neon);text-shadow:var(--neon-glow)}
-.vbox .vn{font-size:clamp(40px,11vw,84px);font-weight:900;font-style:italic;margin:8px 0 2px;text-shadow:0 0 24px rgba(53,232,58,.55)}
-.vbox .vsics{font-size:clamp(20px,5vw,30px);font-family:var(--font-num);color:var(--neon);text-shadow:var(--neon-glow);margin-bottom:22px}
+.vbox .vt{font-size:clamp(19.5px,4.5vw,25.5px);letter-spacing:.6em;color:var(--neon);text-shadow:var(--neon-glow)}
+.vbox .vn{font-size:clamp(60px,16.5vw,126px);font-weight:900;font-style:italic;margin:8px 0 2px;text-shadow:0 0 24px rgba(53,232,58,.55)}
+.vbox .vsics{font-size:clamp(30px,7.5vw,45px);font-family:var(--font-num);color:var(--neon);text-shadow:var(--neon-glow);margin-bottom:22px}
 .vbox .subbtns{margin-top:6px}
 .vbox .bigbtn{margin-top:0}
 
@@ -300,15 +300,15 @@ input,select{font-family:inherit}
 #log{padding:0 14px 40px;max-width:900px;margin:0 auto;width:100%}
 .logitem{
   border:1px solid var(--neon-dim);margin-bottom:10px;padding:10px 12px;
-  background:rgba(4,23,12,.6);font-size:13px;line-height:1.7;
+  background:rgba(4,23,12,.6);font-size:19.5px;line-height:1.7;
   clip-path:polygon(12px 0,100% 0,100% 100%,0 100%,0 12px);
 }
 .logitem .lh{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .logitem .lw{color:var(--neon);font-weight:700}
-.logitem .lt{color:#6fae76;font-size:11px}
+.logitem .lt{color:#6fae76;font-size:16.5px}
 .logitem details{margin-top:4px}
-.logitem summary{cursor:pointer;color:#9adf9f;font-size:11px;letter-spacing:.1em}
-.logitem .rline{font-size:12px;color:#cdeacd;padding-left:8px}
+.logitem summary{cursor:pointer;color:#9adf9f;font-size:16.5px;letter-spacing:.1em}
+.logitem .rline{font-size:18px;color:#cdeacd;padding-left:8px}
 .logempty{text-align:center;color:#6fae76;padding:40px 0;letter-spacing:.2em}
 
 /* 自製確認視窗(取代 confirm) */
@@ -319,7 +319,7 @@ input,select{font-family:inherit}
   clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
   box-shadow:0 0 20px rgba(53,232,58,.4);text-align:center;
 }
-.cwin .cmsg{font-size:14px;line-height:1.8;margin-bottom:18px;color:var(--white)}
+.cwin .cmsg{font-size:21px;line-height:1.8;margin-bottom:18px;color:var(--white)}
 .cwin .cbtns{display:flex;gap:12px;justify-content:center}
 .cwin .cok{padding:10px 26px;background:var(--neon);color:#031006;font-weight:900;letter-spacing:.2em;text-indent:.2em;
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
@@ -327,7 +327,7 @@ input,select{font-family:inherit}
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 #toast{
   position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);
-  background:var(--neon);color:#031006;font-weight:700;font-size:13px;
+  background:var(--neon);color:#031006;font-weight:700;font-size:19.5px;
   padding:10px 22px;z-index:99;transition:transform .25s;letter-spacing:.05em;
   clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
 }
@@ -347,9 +347,9 @@ input,select{font-family:inherit}
       <h3>PLAYER 1</h3>
       <div class="field">
         <label>選手名稱</label>
-        <input id="p1name" maxlength="12" placeholder="例如:VIC">
+        <input id="p1name" maxlength="12" value="陀螺破壞者" placeholder="例如:陀螺破壞者">
       </div>
-      <label style="font-size:11px;letter-spacing:.2em;color:#9adf9f;display:block;margin-bottom:6px">出戰陀螺 × 3(戰刃 + 固鎖/軸心)</label>
+      <label style="font-size:16.5px;letter-spacing:.2em;color:#9adf9f;display:block;margin-bottom:6px">出戰陀螺 × 3(戰刃 + 固鎖/軸心)</label>
       <div id="p1deck"></div>
       <div class="hint">左欄選戰刃,右欄填配置(例:3-60LR)。資料同步自 Beyblade X Tier 天梯站。</div>
     </div>
@@ -358,9 +358,9 @@ input,select{font-family:inherit}
       <h3>PLAYER 2</h3>
       <div class="field">
         <label>選手名稱</label>
-        <input id="p2name" maxlength="12" placeholder="例如:Yat">
+        <input id="p2name" maxlength="12" value="安息滅霸王" placeholder="例如:安息滅霸王">
       </div>
-      <label style="font-size:11px;letter-spacing:.2em;color:#9adf9f;display:block;margin-bottom:6px">出戰陀螺 × 3(戰刃 + 固鎖/軸心)</label>
+      <label style="font-size:16.5px;letter-spacing:.2em;color:#9adf9f;display:block;margin-bottom:6px">出戰陀螺 × 3(戰刃 + 固鎖/軸心)</label>
       <div id="p2deck"></div>
       <div class="hint">對戰中可隨時切換出戰的陀螺。</div>
     </div>
