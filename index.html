@@ -254,10 +254,29 @@ input,select{font-family:inherit}
 .deckdots .thumb.dot{display:block;box-shadow:0 0 5px currentColor}
 .deckdots button.on{background:var(--neon);color:#031006;font-weight:700}
 
-/* 窄螢幕:按鈕欄縮小 */
-@media(max-width:560px){
-  .fbtn{padding:6px 7px;gap:5px;min-height:40px}
+/* ====== 手機直向:對戰面板自適應縮放,完整塞入不被截斷 ====== */
+@media (max-width:600px){
+  /* 讓格線/彈性子項可縮小,避免內容撐破螢幕被 overflow-x 裁掉 */
   .mainrow{gap:5px}
+  .mainrow>*{min-width:0}
+  .fincol{min-width:0;gap:6px}
+  .fbtn{min-width:0;padding:6px 8px;gap:4px;min-height:38px}
+  .fbtn>span:first-child{min-width:0;overflow:hidden}
+  .fbtn .fname{font-size:clamp(13px,4.4vw,18px)}
+  .fbtn .fsub{font-size:clamp(8px,2.5vw,11px);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fbtn .fpts{font-size:clamp(14px,4.6vw,20px)}
+  .fbtn.xtreme{border-width:2px}
+  .fbtn.xtreme .fname{font-size:clamp(14px,4.8vw,20px)}
+  /* 中央分數縮小,把寬度讓給兩側決勝按鈕 */
+  .scorepair{gap:4px}
+  .scorebox{width:clamp(52px,15vw,84px);border-width:2px}
+  .scorebox .digit{font-size:clamp(40px,12vw,80px)}
+  .scorelabel{font-size:clamp(9px,2.6vw,12px)}
+  /* 上排名牌/回合資訊縮小 */
+  .nameplate{font-size:clamp(14px,4.4vw,22px);padding:6px 9px}
+  .roundbox{min-width:64px}
+  .roundbox .r{font-size:clamp(24px,7.5vw,38px)}
+  .roundbox .timer{font-size:clamp(12px,3.4vw,16px)}
 }
 
 /* ====== 倒數(全白) ====== */
