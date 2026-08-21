@@ -368,6 +368,24 @@ input,select{font-family:inherit}
 .evempty a{color:var(--neon)}
 .evempty.err{color:var(--amber)}
 
+/* ====== 賽事規則 ====== */
+#rules{padding:0 14px 40px;max-width:900px;margin:0 auto;width:100%}
+.rules-cat{font-size:18px;letter-spacing:.3em;color:var(--neon);text-shadow:var(--neon-glow);
+  border-bottom:1px solid var(--neon-dim);padding-bottom:6px;margin:20px 0 12px}
+.ruleitem{
+  border:1px solid var(--neon-dim);margin-bottom:10px;
+  background:rgba(4,23,12,.6);
+  clip-path:polygon(12px 0,100% 0,100% 100%,0 100%,0 12px);
+}
+.ruleitem summary{cursor:pointer;list-style:none;padding:12px 14px;
+  color:var(--neon);font-weight:700;font-size:19px;letter-spacing:.05em}
+.ruleitem summary::-webkit-details-marker{display:none}
+.ruleitem summary::before{content:"▸ ";color:#6fae76}
+.ruleitem[open] summary::before{content:"▾ "}
+.ruleitem .rbody{padding:0 16px 14px;font-size:17px;line-height:1.85;color:#cdeacd}
+.ruleitem .rbody strong{color:var(--white)}
+.ruleitem .rnote{display:block;margin-top:8px;font-size:15px;color:#6fae76}
+
 /* 自製確認視窗(取代 confirm) */
 #confirmBox{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(1,8,4,.82);backdrop-filter:blur(2px)}
 #confirmBox.show{display:flex}
@@ -452,6 +470,7 @@ body[data-screen="battle"] #fsBtn{display:none}
   <div class="subbtns">
     <button class="ghostbtn" id="gotoLog">📄 對戰紀錄</button>
     <button class="ghostbtn" id="gotoEvents">🔍 賽事搜尋</button>
+    <button class="ghostbtn" id="gotoRules">📖 賽事規則</button>
     <button class="ghostbtn" id="importBtn">⬆ 匯入 TXT 資料庫</button>
     <input type="file" id="importFile" accept=".txt" hidden>
   </div>
@@ -584,6 +603,64 @@ body[data-screen="battle"] #fsBtn{display:none}
   </div>
   <div id="eventsUpdated"></div>
   <div id="eventList"></div>
+</section>
+
+<!-- ================= 賽事規則 ================= -->
+<section class="screen" id="rules">
+  <div class="brand">RULE<span class="x">BOOK</span><small>賽事規則解說</small></div>
+  <div class="subbtns" style="margin-bottom:10px">
+    <button class="ghostbtn" id="rulesHomeBtn">🏠 回到設定</button>
+  </div>
+
+  <h3 class="rules-cat">賽制(如何排對戰)</h3>
+
+  <details class="ruleitem"><summary>瑞士制(Swiss System)</summary>
+    <div class="rbody">選手不會因輸一場就淘汰。每一輪系統會把<strong>戰績相近</strong>的人配成對手,打完固定輪數(常見 4～6 輪)後,依總勝場排名。
+    <br>• 優點:人人都能打滿場數,強者容易相遇,公平又快。
+    <br>• 適合:報名人數多、時間有限的公開賽。</div>
+  </details>
+
+  <details class="ruleitem"><summary>單淘汰(Single Elimination)</summary>
+    <div class="rbody">輸一場就<strong>直接淘汰</strong>,勝者晉級,一路打到剩最後一位冠軍。
+    <br>• 優點:場數最少、進行最快。
+    <br>• 缺點:運氣成分高,第一輪就可能碰到強敵而出局。</div>
+  </details>
+
+  <details class="ruleitem"><summary>雙淘汰(Double Elimination)</summary>
+    <div class="rbody">要<strong>輸兩場</strong>才會被淘汰。分「勝部」與「敗部」:第一次輸掉會掉到敗部,敗部再輸一次才淘汰。
+    <br>• 優點:給選手一次翻身機會,比單淘汰公平。
+    <br>• 缺點:場數較多、耗時較長。</div>
+  </details>
+
+  <details class="ruleitem"><summary>循環賽(Round Robin)</summary>
+    <div class="rbody">每位選手都要和<strong>其他所有人各打一場</strong>,最後依總勝場(或勝分)排名。
+    <br>• 優點:最公平,實力反映最準確。
+    <br>• 缺點:人一多場數暴增,通常只用在小組或人數少的比賽。</div>
+  </details>
+
+  <details class="ruleitem"><summary>分組賽 + 淘汰賽(Group Stage + Playoffs)</summary>
+    <div class="rbody">先把選手<strong>分成數組打循環</strong>,各組前幾名晉級,再進行單/雙淘汰決出冠軍。
+    <br>• 優點:兼顧公平(分組循環)與刺激(淘汰決賽),世界大賽常用。</div>
+  </details>
+
+  <details class="ruleitem"><summary>積分賽 / 排位賽(Points Ladder)</summary>
+    <div class="rbody">在活動或賽季期間累積積分,勝場加分,依總積分排名。常見於長期聯賽或店家月賽。</div>
+  </details>
+
+  <h3 class="rules-cat">對戰規則(Beyblade X)</h3>
+
+  <details class="ruleitem"><summary>牌組制(3 顆陀螺一組)</summary>
+    <div class="rbody">正式賽多採<strong>牌組(Deck)制</strong>:每位選手準備 3 顆陀螺,每一回合從中挑一顆上場,依戰術搭配應對對手。</div>
+  </details>
+
+  <details class="ruleitem"><summary>得分方式與勝利條件</summary>
+    <div class="rbody">一場對戰以<strong>先達目標分數</strong>者獲勝(本 App 預設 4 分制,亦有 7 分制)。各種結束方式的分數:
+    <br>• <strong>存活勝 Spin Finish = 1 分</strong>:對手陀螺先停止轉動。
+    <br>• <strong>場外勝 Over Finish = 2 分</strong>:把對手陀螺打出擂台外。
+    <br>• <strong>爆裂勝 Burst Finish = 2 分</strong>:讓對手陀螺爆開解體。
+    <br>• <strong>極限勝 Xtreme Finish = 3 分</strong>:從 Xtreme Dash 區發射,一擊將對手打出場外。
+    <br><span class="rnote">※ 實際分數/規則以各賽事公告與官方 Beyblade X 規則為準。</span></div>
+  </details>
 </section>
 
 <div id="confirmBox">
@@ -1265,6 +1342,10 @@ async function loadEvents(){
 document.getElementById('gotoEvents').addEventListener('click',()=>{showScreen('events');loadEvents()});
 document.getElementById('eventsHomeBtn').addEventListener('click',()=>showScreen('setup'));
 document.getElementById('eventsReload').addEventListener('click',loadEvents);
+
+/* ===== 賽事規則 ===== */
+document.getElementById('gotoRules').addEventListener('click',()=>showScreen('rules'));
+document.getElementById('rulesHomeBtn').addEventListener('click',()=>showScreen('setup'));
 
 (async function init(){
   SETUPMEM=await store.get('beyx:setup');

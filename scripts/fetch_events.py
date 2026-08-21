@@ -24,7 +24,7 @@ PROMPT = """搜尋新加坡(Singapore)最近一個月到未來即將舉辦的陀
 - World Beyblade Organization (worldbeyblade.org) 的新加坡討論區
 - Facebook 社團 / 活動、Eventbrite、Peatix
 - 當地玩具/模型店家(如 Simply Toys、OG Bricks 等)的活動公告
-- Instagram 或其他社群公告
+- Instagram 社群帳號,特別是 @beykita.sg(https://www.instagram.com/beykita.sg/),以及其他新加坡陀螺相關 IG / 社群公告
 
 規則:
 - 只列出你能從搜尋結果實際找到的活動,不要杜撰。
