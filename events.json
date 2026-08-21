@@ -1,45 +1,45 @@
 {
-  "updated": "2026-08-21T11:02:44.374201+00:00",
+  "updated": "2026-08-21T11:14:37.473948+00:00",
   "events": [
     {
-      "title": "GA Cup Beyblade Tournament (每週五)",
-      "date": "每週五 (常態賽事，2026 年 8 月持續舉行中)",
-      "location": "Singapore (Somerset / Orchard)",
-      "venue": "*SCAPE",
+      "title": "GA Cup Beyblade Tournament",
+      "date": "每週五 7:30pm(常態賽事,持續進行中)",
+      "location": "新加坡 Somerset / Orchard 一帶",
+      "venue": "*SCAPE, #03-06",
       "organizer": "Game Academia",
-      "description": "由 Game Academia 主辦、非官方的 Beyblade X 聯賽制每週五賽事，採瑞士制，12 歲以上皆可報名，可贏得官方 Beyblade 零件作為獎品。",
-      "sourceName": "*SCAPE Singapore",
+      "description": "由 Game Academia 主辦的非官方 Beyblade X 週賽,採瑞士制,12 歲以上可參加,票價 S$10,勝者可獲官方陀螺零件獎品。",
+      "sourceName": "*SCAPE Singapore 官網",
       "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
     },
     {
-      "title": "Beycoolen Beyblade Club 每週陀螺之夜",
-      "date": "每週 (常態聚會，2026 年報導仍持續舉行)",
-      "location": "Singapore (Arab Street / Kampong Glam)",
-      "venue": "Rocks Cafe (Arab Street)",
+      "title": "Beycoolen Beyblade Club 每週陀螺賽 / 社群聚會",
+      "date": "每週四晚 7:30pm 起(常態聚會,持續進行中)",
+      "location": "新加坡 Arab Street / Kampong Glam 一帶",
+      "venue": "Rocks Cafe, 98 Arab Street, Level 2, Singapore 199794",
       "organizer": "Beycoolen Beyblade Club",
-      "description": "Beycoolen Beyblade Club 在 Arab Street 的 Rocks Cafe 舉辦每週陀螺賽事與聚會，設有獎品；該社團於 2026 年初移至 Rocks Cafe。",
-      "sourceName": "TheSmartLocal",
+      "description": "每週四於 Rocks Cafe 舉辦免費入場的 Beyblade 賽事,並搭配主題社群活動(社群活動約需 S$6 + café 低消一份),氣氛友善適合新手。",
+      "sourceName": "TheSmartLocal 報導",
       "sourceUrl": "https://thesmartlocal.com/read/beycoolen-beyblade-club/"
     },
     {
-      "title": "GA Cup Summer 2026 Finals",
-      "date": "2026 年夏季 (約 6 月，晉級者將受邀參加年底 Grand Finals)",
-      "location": "Singapore (Somerset / Orchard)",
-      "venue": "*SCAPE",
-      "organizer": "Game Academia",
-      "description": "GA Cup 每週五賽事的夏季總決賽，入圍者可獲邀參加年底舉行的 GA Cup Grand Finals。",
-      "sourceName": "*SCAPE Singapore",
-      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-summer-2026-finals/"
+      "title": "BEYBLADE X SEA CUP 2026",
+      "date": "2026 年 7 月 7 日至 13 日(決賽 7 月 12 日;活動已結束)",
+      "location": "新加坡 Marina Centre",
+      "venue": "Marina Square, Marina Foyer Atrium & Marina Foyers",
+      "organizer": "Takara Tomy / Beyblade X 官方",
+      "description": "東南亞區域最強 Bladers 齊聚的 Beyblade X SEA CUP,7 月 12 日進行冠軍決賽,現場並有觀眾抽獎與獨家獎品。",
+      "sourceName": "Marina Square 官網活動頁",
+      "sourceUrl": "https://www.marinasquare.com.sg/articles/article-xe7rsg3g?categories=Events-Web"
     },
     {
-      "title": "Beyblade X SEA Cup 2026 (東南亞盃)",
-      "date": "2026 年 7 月 7 日至 13 日 (決賽 7 月 12 日)",
-      "location": "Singapore (Marina Centre)",
-      "venue": "Marina Square, Level 2 Foyer / Marina Foyer Atrium",
-      "organizer": "Beyblade X (Takara Tomy Asia)",
-      "description": "東南亞區最高層級的 Beyblade X 賽事，各國代表齊聚新加坡 Marina Square 競逐 SEA Cup 冠軍。",
-      "sourceName": "Marina Square",
-      "sourceUrl": "https://www.marinasquare.com.sg/articles/article-xe7rsg3g?categories=Events-Web"
+      "title": "GA Cup Summer 2026 Finals",
+      "date": "2026 年 7 月 4 日(已結束)",
+      "location": "新加坡 Somerset / Orchard 一帶",
+      "venue": "*SCAPE",
+      "organizer": "Game Academia",
+      "description": "GA Cup 每週五 Beyblade X 週賽的夏季總決賽,晉級者將受邀參加稍晚舉行的 GA Cup Grand Finals(年度總決賽)。",
+      "sourceName": "*SCAPE Singapore 官網",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-summer-2026-finals/"
     }
   ]
 }
