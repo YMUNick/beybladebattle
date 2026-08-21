@@ -346,6 +346,28 @@ input,select{font-family:inherit}
 .logitem .rline{font-size:18px;color:#cdeacd;padding-left:8px}
 .logempty{text-align:center;color:#6fae76;padding:40px 0;letter-spacing:.2em}
 
+/* ====== 賽事搜尋 ====== */
+#events{padding:0 14px 40px;max-width:900px;margin:0 auto;width:100%}
+#eventsUpdated{text-align:center;font-size:16px;color:#6fae76;letter-spacing:.1em;margin:6px 0 14px}
+.evitem{
+  border:1px solid var(--neon-dim);margin-bottom:12px;padding:12px 14px;
+  background:rgba(4,23,12,.6);
+  clip-path:polygon(12px 0,100% 0,100% 100%,0 100%,0 12px);
+}
+.evitem .eh{color:var(--neon);font-weight:700;font-size:20px;text-shadow:var(--neon-glow);line-height:1.4}
+.evitem .emeta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:17px;color:#cdeacd}
+.evitem .emeta .k{color:#6fae76;margin-right:4px}
+.evitem details{margin-top:8px}
+.evitem summary{cursor:pointer;color:#9adf9f;font-size:16.5px;letter-spacing:.1em}
+.evitem .edesc{font-size:17px;color:#cdeacd;line-height:1.7;margin-top:6px}
+.evitem .elink{display:inline-block;margin-top:10px;padding:7px 16px;font-size:16px;letter-spacing:.1em;
+  border:1px solid var(--neon-dim);color:#9adf9f;text-decoration:none;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.evitem .elink:hover{border-color:var(--neon);color:var(--neon)}
+.evempty{text-align:center;color:#6fae76;padding:36px 14px;letter-spacing:.1em;line-height:1.9}
+.evempty a{color:var(--neon)}
+.evempty.err{color:var(--amber)}
+
 /* 自製確認視窗(取代 confirm) */
 #confirmBox{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(1,8,4,.82);backdrop-filter:blur(2px)}
 #confirmBox.show{display:flex}
@@ -429,6 +451,7 @@ body[data-screen="battle"] #fsBtn{display:none}
 
   <div class="subbtns">
     <button class="ghostbtn" id="gotoLog">📄 對戰紀錄</button>
+    <button class="ghostbtn" id="gotoEvents">🔍 賽事搜尋</button>
     <button class="ghostbtn" id="importBtn">⬆ 匯入 TXT 資料庫</button>
     <input type="file" id="importFile" accept=".txt" hidden>
   </div>
@@ -550,6 +573,17 @@ body[data-screen="battle"] #fsBtn{display:none}
     <button class="ghostbtn" id="logHomeBtn">🏠 回到設定</button>
   </div>
   <div id="logList"></div>
+</section>
+
+<!-- ================= 賽事搜尋 ================= -->
+<section class="screen" id="events">
+  <div class="brand">EVENT<span class="x">FINDER</span><small>新加坡陀螺賽事</small></div>
+  <div class="subbtns" style="margin-bottom:6px">
+    <button class="ghostbtn" id="eventsHomeBtn">🏠 回到設定</button>
+    <button class="ghostbtn" id="eventsReload">🔄 重新整理</button>
+  </div>
+  <div id="eventsUpdated"></div>
+  <div id="eventList"></div>
 </section>
 
 <div id="confirmBox">
@@ -1181,6 +1215,56 @@ function toast(msg){
 document.getElementById('startBtn').addEventListener('click',newMatch);
 document.getElementById('gotoLog').addEventListener('click',()=>{renderLog();showScreen('log')});
 document.getElementById('logHomeBtn').addEventListener('click',()=>showScreen('setup'));
+
+/* ===== 賽事搜尋 ===== */
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const WBO_SEARCH='https://worldbeyblade.org/Thread-Singapore';
+function renderEventsEmpty(msg,isErr){
+  document.getElementById('eventsUpdated').textContent='';
+  document.getElementById('eventList').innerHTML=
+    '<div class="evempty'+(isErr?' err':'')+'">'+msg+
+    '<br><br>可手動查詢:<a href="'+WBO_SEARCH+'" target="_blank" rel="noopener">World Beyblade Organization(新加坡)↗</a></div>';
+}
+async function loadEvents(){
+  document.getElementById('eventsUpdated').textContent='';
+  document.getElementById('eventList').innerHTML='<div class="evempty">載入中…</div>';
+  let data;
+  try{
+    const res=await fetch('events.json?t='+Date.now());
+    if(!res.ok)throw new Error('http '+res.status);
+    data=await res.json();
+  }catch(e){
+    renderEventsEmpty('目前無法載入賽事資料,請稍後再試。',true);return;
+  }
+  const events=(data&&Array.isArray(data.events))?data.events:[];
+  const upd=data&&data.updated?new Date(data.updated):null;
+  document.getElementById('eventsUpdated').textContent=
+    upd?('最後更新:'+upd.toLocaleString('zh-TW')):'';
+  if(!events.length){
+    renderEventsEmpty('目前找不到近期的新加坡陀螺賽事。',false);return;
+  }
+  document.getElementById('eventList').innerHTML=events.map(ev=>{
+    const meta=[];
+    if(ev.date)meta.push('<span><span class="k">日期</span>'+esc(ev.date)+'</span>');
+    if(ev.location)meta.push('<span><span class="k">地點</span>'+esc(ev.location)+'</span>');
+    if(ev.venue)meta.push('<span><span class="k">場地</span>'+esc(ev.venue)+'</span>');
+    let details='';
+    const hasDetail=ev.organizer||ev.description;
+    if(hasDetail){
+      details='<details><summary>詳情</summary>'+
+        (ev.organizer?'<div class="edesc"><span class="k">主辦</span>'+esc(ev.organizer)+'</div>':'')+
+        (ev.description?'<div class="edesc">'+esc(ev.description)+'</div>':'')+
+        '</details>';
+    }
+    const link=ev.sourceUrl?'<a class="elink" href="'+esc(ev.sourceUrl)+'" target="_blank" rel="noopener">前往'+(ev.sourceName?esc(ev.sourceName):'網站')+' ↗</a>':'';
+    return '<div class="evitem"><div class="eh">'+esc(ev.title||'(未命名賽事)')+'</div>'+
+      (meta.length?'<div class="emeta">'+meta.join('')+'</div>':'')+
+      details+link+'</div>';
+  }).join('');
+}
+document.getElementById('gotoEvents').addEventListener('click',()=>{showScreen('events');loadEvents()});
+document.getElementById('eventsHomeBtn').addEventListener('click',()=>showScreen('setup'));
+document.getElementById('eventsReload').addEventListener('click',loadEvents);
 
 (async function init(){
   SETUPMEM=await store.get('beyx:setup');

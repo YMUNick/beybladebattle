@@ -1,0 +1,46 @@
+name: Fetch Singapore beyblade events
+
+on:
+  schedule:
+    # 每天 UTC 00:00(約台灣/新加坡早上 08:00)執行一次
+    - cron: "0 0 * * *"
+  workflow_dispatch: {}   # 允許在 Actions 頁面手動觸發測試
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-events
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install anthropic
+
+      - name: Fetch events
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/fetch_events.py
+
+      - name: Commit updated events.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- events.json; then
+            echo "events.json 無變更,略過 commit"
+          else
+            git add events.json
+            git commit -m "chore: update Singapore beyblade events [skip ci]"
+            git push
+          fi
