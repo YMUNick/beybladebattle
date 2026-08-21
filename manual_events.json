@@ -1,0 +1,15 @@
+{
+  "_comment": "手動維護的賽事清單。用於機器人抓不到的來源(如 Instagram)。每日 Action 會把這裡的賽事與自動搜尋到的合併(依標題去重)。可自由新增/修改。",
+  "events": [
+    {
+      "title": "Ready Set! 3! 2! 1! Go Go Shoot!",
+      "date": "2026-08-24(週一)19:30",
+      "location": "Singapore(Yishun / Nee Soon)",
+      "venue": "Nee Soon Central CC, Level 2, Seminar Room 1",
+      "organizer": "Beykita SG",
+      "description": "報名費 $7;瑞士制(至少 4 輪);採標準新加坡規則,允許換組(combo change)。",
+      "sourceName": "beykita.sg IG",
+      "sourceUrl": "https://www.instagram.com/beykita.sg/"
+    }
+  ]
+}

@@ -115,15 +115,34 @@ def main():
             print(f"警告:無法解析輸出({e}),寫入空清單", file=sys.stderr)
             events = []
 
+    # 合併手動維護的賽事(用於 web_fetch 抓不到的來源,例如 Instagram)。
+    # 手動清單優先,再接自動搜尋結果,依標題(不分大小寫)去重。
+    manual_path = os.path.join(os.path.dirname(OUT_PATH), "manual_events.json")
+    manual = []
+    if os.path.exists(manual_path):
+        try:
+            with open(manual_path, encoding="utf-8") as f:
+                manual = json.load(f).get("events", [])
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"警告:讀取 manual_events.json 失敗({e})", file=sys.stderr)
+
+    seen, merged = set(), []
+    for ev in list(manual) + list(events):
+        key = (ev.get("title") or "").strip().lower()
+        if key and key in seen:
+            continue
+        seen.add(key)
+        merged.append(ev)
+
     out = {
         "updated": datetime.now(timezone.utc).isoformat(),
-        "events": events,
+        "events": merged,
     }
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
-    print(f"已寫入 {OUT_PATH}:{len(events)} 筆賽事")
+    print(f"已寫入 {OUT_PATH}:{len(merged)} 筆賽事(自動 {len(events)} + 手動 {len(manual)},去重後 {len(merged)})")
 
 
 if __name__ == "__main__":
