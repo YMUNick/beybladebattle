@@ -20,11 +20,16 @@ OUT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 # 因此改為在提示中要求純 JSON 輸出,並在下方以容錯方式解析。
 PROMPT = """搜尋新加坡(Singapore)最近一個月到未來即將舉辦的陀螺(Beyblade / Beyblade X)賽事、比賽或聚會。
 
-請使用網路搜尋查找真實、可驗證的活動,來源可包含:
-- World Beyblade Organization (worldbeyblade.org) 的新加坡討論區
-- Facebook 社團 / 活動、Eventbrite、Peatix
-- 當地玩具/模型店家(如 Simply Toys、OG Bricks 等)的活動公告
-- Instagram 社群帳號,特別是 @beykita.sg(https://www.instagram.com/beykita.sg/),以及其他新加坡陀螺相關 IG / 社群公告
+請使用網路搜尋查找真實、可驗證的活動,務必查看以下已知來源(以及其他你搜尋到的相關來源):
+- Instagram 帳號:@beykita.sg、@sg_beyblade、@beyblade_singaporeofficial、@beyblade_singapore
+- Facebook:Singapore Beyblade Society 社團(facebook.com/groups/singaporebeybladesociety,2,500+ 成員,常辦賽事/工作坊)
+- 常態賽事主辦:
+  - Game Academia「GA Cup」每週五 @ *SCAPE(scape.sg/whats-on/ga-cup-beyblade)
+  - Beycoolen Beyblade Club 每週四晚 @ Rocks Cafe(98 Arab Street)
+- Takara Tomy Asia 官方 Beyblade X 活動時程(takaratomyasia.com)——找新加坡場次
+- 官方 Beyblade X 活動(beyblade.com)、Beyblade X SEA CUP、以及動漫/玩具展(如 Conjutsu)內的陀螺賽
+- World Beyblade Organization(worldbeyblade.org)新加坡討論區
+- 當地玩具/模型店家、Eventbrite、Peatix、以及新加坡國家圖書館活動(nlb.libcal.com)
 
 規則:
 - 只列出你能從搜尋結果實際找到的活動,不要杜撰。
