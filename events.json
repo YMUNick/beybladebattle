@@ -1,4 +1,25 @@
 {
-  "updated": null,
-  "events": []
+  "updated": "2026-08-21T10:38:20.218807+00:00",
+  "events": [
+    {
+      "title": "GA Cup Beyblade Tournament (每週五)",
+      "date": "每週五晚上 7 點(2026 年 8 月仍持續舉辦中,為即將到來的固定賽事)",
+      "location": "Singapore(Somerset / Orchard)",
+      "venue": "*SCAPE, 2 Orchard Link",
+      "organizer": "Game Academia",
+      "description": "由 Game Academia 為新加坡陀螺社群舉辦的非官方、聯賽制 Beyblade X 週賽,採瑞士制,12 歲以上可參加,勝出者可獲官方陀螺零件獎品。",
+      "sourceName": "*SCAPE Singapore 官網",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
+    },
+    {
+      "title": "GA Cup Summer 2026 Finals",
+      "date": "2026 年 7 月 4 日下午 2 點",
+      "location": "Singapore(Somerset / Orchard)",
+      "venue": "*SCAPE #03-06",
+      "organizer": "Game Academia",
+      "description": "GA Cup 每週五陀螺賽的夏季總決賽,晉級者將受邀參加稍後舉辦的 GA Cup 總決賽(Grand Finals)。",
+      "sourceName": "*SCAPE Singapore 官網",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-summer-2026-finals/"
+    }
+  ]
 }
