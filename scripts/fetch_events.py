@@ -39,6 +39,10 @@ PROMPT = """搜尋新加坡(Singapore)最近一個月到未來即將舉辦的陀
 - 若真的找不到任何近期活動,回傳空的 events 陣列。
 - 最多列出 15 筆,依日期由近到遠排序。
 
+重要:Instagram 等社群頁面用一般關鍵字搜尋常常抓不到內容。請「主動使用 web_fetch 工具直接讀取」這些頁面,
+尤其是 https://www.instagram.com/beykita.sg/(以及 @sg_beyblade、@beyblade_singaporeofficial、@beyblade_singapore
+的 IG 頁面),從貼文中把賽事名稱、日期、地點、報名資訊整理出來。sourceUrl 可用該 IG 頁面或貼文網址。
+
 搜尋完成後,最後只輸出一段 JSON(不要有任何其他文字、說明或 Markdown 標記),格式如下:
 {
   "events": [
@@ -76,12 +80,15 @@ def main():
         sys.exit(1)
 
     client = anthropic.Anthropic()
-    tools = [{"type": "web_search_20260209", "name": "web_search"}]
+    tools = [
+        {"type": "web_search_20260209", "name": "web_search"},
+        {"type": "web_fetch_20260209", "name": "web_fetch"},
+    ]
     messages = [{"role": "user", "content": PROMPT}]
 
-    # web search 是伺服器端工具,可能回傳 pause_turn,需要續跑
+    # web search / fetch 是伺服器端工具,可能回傳 pause_turn,需要續跑
     message = None
-    for _ in range(6):
+    for _ in range(10):
         message = client.messages.create(
             model=MODEL,
             max_tokens=8000,
