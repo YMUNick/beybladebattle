@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-23T01:23:31.754198+00:00",
+  "updated": "2026-08-24T01:20:12.092973+00:00",
   "events": [
     {
       "title": "Ready Set! 3! 2! 1! Go Go Shoot!",
@@ -13,23 +13,33 @@
     },
     {
       "title": "GA Cup Beyblade Tournament",
-      "date": "每週五 19:30(常態賽事,持續進行中)",
-      "location": "Singapore(Somerset / Orchard)",
-      "venue": "*SCAPE #03-06, 2 Orchard Link, Singapore",
+      "date": "每週五 (Every Friday), 7:30 pm — 常態舉辦中",
+      "location": "Singapore (Somerset / Orchard)",
+      "venue": "*SCAPE, #03-06, 2 Orchard Link",
       "organizer": "Game Academia",
-      "description": "由 Game Academia 主辦、面向新加坡陀螺社群的非官方聯賽制賽事,每週五晚上 7:30 於 *SCAPE 舉行,門票 S$10,勝者可獲官方 Beyblade 零件作為獎品。報名表:https://forms.gle/D3ZwnSWc8fgVjF2t7",
-      "sourceName": "*SCAPE Singapore(官方活動頁)",
+      "description": "由 Game Academia 舉辦的非官方 Beyblade X 聯賽制賽事,每週五晚上進行 Swiss 賽制,12 歲以上皆可參加,票價 $10,勝者可贏得官方 Beyblade 零件。線上報名表:forms.gle/D3ZwnSWc8fgVjF2t7",
+      "sourceName": "*SCAPE Singapore",
       "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
     },
     {
-      "title": "Beycoolen Beyblade Club 每週陀螺聚會/賽事",
-      "date": "每週四 19:30 起(常態聚會,持續進行中)",
-      "location": "Singapore(Kampong Glam / Arab Street)",
-      "venue": "Rocks Cafe, 98 Arab Street, Level 2, Singapore 199794",
+      "title": "Beycoolen Beyblade Club 每週聚會 / 賽事",
+      "date": "每週 (weekly) — 常態舉辦中",
+      "location": "Singapore (Arab Street / Kampong Glam)",
+      "venue": "Rocks Cafe, 98 Arab Street, Level 2, Singapore 199794 (營業時間 2pm–11pm)",
       "organizer": "Beycoolen Beyblade Club",
-      "description": "Beycoolen Beyblade Club 每週四晚上 7:30 起在 Rocks Cafe 舉辦陀螺聚會與比賽,入場免費,並設有獎品,氣氛友善,適合各年齡玩家。",
-      "sourceName": "TheSmartLocal(採訪報導)",
+      "description": "Beycoolen Beyblade Club 每週在 Arab Street 的 Rocks Cafe 舉辦 Beyblade 活動,設有獎品、氣氛友善,適合新手與老玩家。",
+      "sourceName": "TheSmartLocal",
       "sourceUrl": "https://thesmartlocal.com/read/beycoolen-beyblade-club/"
+    },
+    {
+      "title": "Singapore Beyblade Society (社群/賽事資訊)",
+      "date": "持續更新中 (社團常辦賽事/工作坊)",
+      "location": "Singapore",
+      "venue": "",
+      "organizer": "Singapore Beyblade Society (Facebook Group)",
+      "description": "新加坡本地陀螺社群 Facebook 社團,成員逾 2,500 人,常發布與舉辦賽事、工作坊及聚會資訊。最新確切場次請於社團內查看。",
+      "sourceName": "Facebook — Singapore Beyblade Society",
+      "sourceUrl": "https://www.facebook.com/groups/singaporebeybladesociety/"
     }
   ]
 }
