@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-26T01:19:48.469203+00:00",
+  "updated": "2026-08-27T07:52:14.940865+00:00",
   "events": [
     {
       "title": "Ready Set! 3! 2! 1! Go Go Shoot!",
@@ -12,23 +12,23 @@
       "sourceUrl": "https://www.instagram.com/beykita.sg/"
     },
     {
-      "title": "GA Cup Beyblade Tournament (每週五)",
-      "date": "Every Friday (ongoing / 每週五 7:30pm)",
-      "location": "Somerset, Singapore",
-      "venue": "*SCAPE, #03-06 (2 Orchard Link)",
+      "title": "GA Cup Beyblade Tournament",
+      "date": "每週五 (持續進行中,晚上 7:30)",
+      "location": "Singapore, Somerset",
+      "venue": "*SCAPE #03-06 (2 Orchard Link)",
       "organizer": "Game Academia",
-      "description": "Game Academia 為新加坡 Beyblade 社群舉辦的非官方競技聯賽,每週五晚採瑞士制賽制,12 歲以上皆可參加,獎品為官方 Beyblade 零件,報名費 $10。",
-      "sourceName": "*SCAPE Singapore – What's On",
+      "description": "由 Game Academia 主辦的非官方 Beyblade X 每週競技聯賽,採瑞士制,12 歲以上可參加,門票 S$10,勝者可贏得官方 Beyblade 零件。可透過 forms.gle/D3ZwnSWc8fgVjF2t7 報名。",
+      "sourceName": "*SCAPE Singapore 官方活動頁",
       "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
     },
     {
-      "title": "Beycoolen Beyblade Club (每週聚會)",
-      "date": "Weekly (ongoing / 每週,傍晚約 5:30pm)",
-      "location": "Kampong Glam / Arab Street, Singapore",
+      "title": "Beycoolen Beyblade Club 每週陀螺聚會",
+      "date": "每週四晚 (持續進行中)",
+      "location": "Singapore, Arab Street (Kampong Glam)",
       "venue": "Rocks Cafe, 98 Arab Street, Level 2, Singapore 199794",
       "organizer": "Beycoolen Beyblade Club",
-      "description": "Beycoolen Beyblade Club 在 Rocks Cafe 舉辦每週 Beyblade 聚會與賽事,設有獎品,氣氛友善,適合各程度玩家。",
-      "sourceName": "TheSmartLocal",
+      "description": "Beycoolen Beyblade Club 於 Rocks Cafe 每週舉辦的 Beyblade 聚會/賽事,有獎品及友善的玩家社群,適合各級別的 blader。",
+      "sourceName": "TheSmartLocal 專題報導",
       "sourceUrl": "https://thesmartlocal.com/read/beycoolen-beyblade-club/"
     }
   ]
