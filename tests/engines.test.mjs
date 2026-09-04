@@ -145,3 +145,73 @@ test('swiss: undo drops later generated rounds', () => {
   assert.equal(st.rounds.length, 1);
   assert.equal(st.rounds[0].matches[0].winner, null);
 });
+
+// ---- edge-case regression guards ----
+
+test('round robin: 2 players -> 1 round, 1 match, completes with a champion', () => {
+  const rr = BBEngines.get('round_robin');
+  const players = ps(2);
+  let st = rr.init(players, {});
+  assert.equal(st.rounds.length, 1);
+  assert.equal(st.rounds[0].matches.length, 1);
+  st = rr.recordResult(st, players, st.rounds[0].matches[0].id, 'p1');
+  assert.equal(rr.isComplete(st), true);
+  assert.equal(rr.champion(st, players), 'p1');
+});
+
+test('single elim: non-power-of-two (5 and 7) has correct rounds/byes and plays to a champion', () => {
+  const se = BBEngines.get('single_elim');
+  [[5, 3, 3], [7, 3, 1]].forEach(function (cfg) {
+    const n = cfg[0], expectRounds = cfg[1], expectByes = cfg[2];
+    const players = ps(n);
+    let st = se.init(players, { seed: 'input' });
+    assert.equal(st.rounds.length, expectRounds, n + ' players -> ' + expectRounds + ' rounds');
+    assert.equal(st.rounds[0].matches.filter(m => m.bye).length, expectByes, n + ' players -> ' + expectByes + ' byes');
+    // play everything: always advance p1 when both slots are filled
+    let guard = 0;
+    while (!se.isComplete(st) && guard++ < 50) {
+      st.rounds.forEach(rd => rd.matches.forEach(m => {
+        if (!m.bye && m.winner == null && m.p1 && m.p2) st = se.recordResult(st, players, m.id, m.p1);
+      }));
+    }
+    assert.equal(se.isComplete(st), true, n + ' players completes');
+    assert.ok(se.champion(st), n + ' players has champion');
+  });
+});
+
+test('swiss: rematch fallback pairs everyone even when rematches are unavoidable', () => {
+  const sw = BBEngines.get('swiss');
+  const players = ps(4);
+  // 4 players over 5 rounds forces rematches after round 3
+  let st = sw.init(players, { rounds: 5 });
+  let guard = 0;
+  while (!sw.isComplete(st) && guard++ < 20) {
+    const cur = st.rounds[st.rounds.length - 1];
+    cur.matches.forEach(m => { if (!m.bye && m.winner == null) st = sw.recordResult(st, players, m.id, m.p1); });
+  }
+  assert.equal(st.rounds.length, 5);
+  assert.equal(sw.isComplete(st), true);
+  // every round paired all 4 players (2 matches, no one stranded)
+  st.rounds.forEach(rd => {
+    const seated = new Set();
+    rd.matches.forEach(m => { if (m.p1) seated.add(m.p1); if (m.p2) seated.add(m.p2); });
+    assert.equal(seated.size, 4);
+  });
+});
+
+test('round robin: bye win is excluded from winPct denominator', () => {
+  const rr = BBEngines.get('round_robin');
+  const players = ps(3); // odd -> each round has one bye
+  let st = rr.init(players, {});
+  // record only real matches: p1 beats everyone it faces, others lose their real games
+  st.rounds.forEach(rd => rd.matches.forEach(m => {
+    if (m.bye) return;
+    const winner = (m.p1 === 'p1' || m.p2 === 'p1') ? 'p1' : m.p1;
+    st = rr.recordResult(st, players, m.id, winner);
+  }));
+  const table = rr.standings(st, players);
+  // a player that got a bye plus a real loss must not show inflated winPct from the bye
+  const loser = table.find(r => r.byes === 1 && (r.wins - r.byes) === 0 && r.losses >= 1);
+  assert.ok(loser, 'expected a player with a bye and no real win');
+  assert.equal(loser.winPct, 0);
+});

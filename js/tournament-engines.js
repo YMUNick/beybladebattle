@@ -70,11 +70,13 @@
   function tallyStandings(state, participants) {
     var map = {};
     participants.forEach(function (p) {
-      map[p.id] = { rank: 0, playerId: p.id, name: p.name, wins: 0, losses: 0, winPct: 0, diff: 0 };
+      map[p.id] = { rank: 0, playerId: p.id, name: p.name, wins: 0, losses: 0, byes: 0, winPct: 0, diff: 0 };
     });
     eachMatch(state, function (m) {
       if (m.winner == null) return;
-      if (m.bye) { if (map[m.winner]) map[m.winner].wins++; return; }
+      // A bye counts as a win for standings/ranking, but is not a "played game":
+      // byes are tracked separately and excluded from the winPct denominator below.
+      if (m.bye) { if (map[m.winner]) { map[m.winner].wins++; map[m.winner].byes++; } return; }
       var w = m.winner, l = (m.p1 === w ? m.p2 : m.p1);
       if (map[w]) map[w].wins++;
       if (map[l]) map[l].losses++;
@@ -84,7 +86,10 @@
       }
     });
     var rows = Object.keys(map).map(function (k) { return map[k]; });
-    rows.forEach(function (r) { var g = r.wins + r.losses; r.winPct = g ? r.wins / g : 0; });
+    rows.forEach(function (r) {
+      var played = (r.wins - r.byes) + r.losses; // real games only
+      r.winPct = played ? (r.wins - r.byes) / played : 0;
+    });
     rows.sort(function (a, b) {
       return (b.wins - a.wins) || headToHead(state, a.playerId, b.playerId) ||
              (b.diff - a.diff) || a.name.localeCompare(b.name);
@@ -341,7 +346,6 @@
     view: function (s) { return { type: 'rounds', rounds: s.rounds }; }
   };
 
-  // engines are attached in later tasks
   var BBEngines = {
     round_robin: roundRobin,
     single_elim: singleElim,
