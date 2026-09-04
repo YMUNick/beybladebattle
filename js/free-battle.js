@@ -62,6 +62,29 @@
     var p = t.participants.filter(function (x) { return x.id === pid; })[0];
     return p ? p.name : '—';
   }
+  function findMatchInState(state, matchId) {
+    for (var r = 0; r < state.rounds.length; r++) {
+      var ms = state.rounds[r].matches;
+      for (var i = 0; i < ms.length; i++) if (ms[i].id === matchId) return ms[i];
+    }
+    return null;
+  }
+  function rematch(id) {
+    var t = getById(id); if (!t) return;
+    if (t.participants.length < 2) { if (window.toast) toast('人數不足,無法重賽'); return; }
+    var participants = t.participants.map(function (p) { return { id: p.id, name: p.name }; });
+    var eng = BBEngines.get(t.format);
+    var state = eng.init(participants, (t.state && t.state.options) || {});
+    var base = t.name.replace(/\s*\(重賽\)\s*$/, '');
+    var nt = {
+      id: 't_' + Date.now().toString(36),
+      name: base + ' (重賽)', format: t.format,
+      createdAt: Date.now(), participants: participants, state: state
+    };
+    upsert(nt);
+    openTournament(nt.id);
+    if (window.toast) toast('已用相同名單開新一場');
+  }
   function renderStandings(t) {
     var eng = BBEngines.get(t.format);
     var rows = eng.standings(t.state, t.participants);
@@ -84,17 +107,35 @@
       return '<div class="matchrow"><span class="mbye">' + esc(nameOf(t, m.p1)) + ' — 輪空(自動晉級)</span></div>';
     }
     var decided = m.winner != null;
-    var p1w = m.winner === m.p1, p2w = m.winner === m.p2;
-    var left = '<div class="mside">' +
-      '<span class="mname ' + (p1w ? 'win' : '') + '">' + esc(nameOf(t, m.p1)) + '</span>' +
-      (decided || m.p1 == null ? '' : '<button class="winbtn" data-win="' + m.id + '|' + m.p1 + '">勝</button>') + '</div>';
-    var mid = decided
-      ? '<span class="mvs">' + (m.score ? m.score[0] + '-' + m.score[1] : 'VS') + ' <button class="mundo" data-undo="' + m.id + '">復原</button></span>'
-      : '<span class="mvs">VS</span>';
-    var right = '<div class="mside right">' +
-      (decided || m.p2 == null ? '' : '<button class="winbtn" data-win="' + m.id + '|' + m.p2 + '">勝</button>') +
-      '<span class="mname ' + (p2w ? 'win' : '') + '">' + esc(nameOf(t, m.p2)) + '</span></div>';
-    return '<div class="matchrow">' + left + mid + right + '</div>';
+    function nameCell(pid, isWin, right) {
+      var clickable = pid != null;
+      var cls = 'mname' + (isWin ? ' win' : '') + (clickable ? ' pick' : '');
+      var attr = clickable ? ' data-pick="' + m.id + '|' + pid + '"' : '';
+      return '<div class="mside' + (right ? ' right' : '') + '"><span class="' + cls + '"' + attr + '>' +
+        esc(nameOf(t, pid)) + '</span></div>';
+    }
+    var scoreTxt = m.score ? m.score[0] + '-' + m.score[1] : 'VS';
+    var tools = decided
+      ? ' <button class="miconbtn" data-score="' + m.id + '" title="比分">✎</button>' +
+        '<button class="miconbtn" data-undo="' + m.id + '" title="清除">↺</button>'
+      : '';
+    var mid = '<span class="mvs">' + scoreTxt + tools + '</span>';
+    return '<div class="matchrow">' + nameCell(m.p1, m.winner === m.p1, false) + mid +
+      nameCell(m.p2, m.winner === m.p2, true) + '</div>';
+  }
+  function wireMatchControls(box, id) {
+    box.querySelectorAll('[data-pick]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var parts = el.getAttribute('data-pick').split('|');
+        record(id, parts[0], parts[1]);
+      });
+    });
+    box.querySelectorAll('[data-undo]').forEach(function (b) {
+      b.addEventListener('click', function () { undo(id, b.getAttribute('data-undo')); });
+    });
+    box.querySelectorAll('[data-score]').forEach(function (b) {
+      b.addEventListener('click', function () { openScoreEditor(id, b.getAttribute('data-score')); });
+    });
   }
   function renderMatches(t) {
     var box = document.getElementById('tMatches');
@@ -102,16 +143,39 @@
       return '<div class="rnd"><div class="rndh">第 ' + rd.index + ' 輪</div>' +
         rd.matches.map(function (m) { return matchRowHtml(t, m); }).join('') + '</div>';
     }).join('');
-    box.querySelectorAll('[data-win]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var parts = b.getAttribute('data-win').split('|');
-        record(t.id, parts[0], parts[1]);
-      });
-    });
-    box.querySelectorAll('[data-undo]').forEach(function (b) {
-      b.addEventListener('click', function () { undo(t.id, b.getAttribute('data-undo')); });
-    });
+    wireMatchControls(box, t.id);
   }
+  var scoreCtx = null;
+  function openScoreEditor(id, matchId) {
+    var t = getById(id); if (!t) return;
+    var m = findMatchInState(t.state, matchId);
+    if (!m || m.winner == null) { if (window.toast) toast('請先選勝方再填比分'); return; }
+    var winId = m.winner, loseId = (m.p1 === winId ? m.p2 : m.p1);
+    scoreCtx = { id: id, matchId: matchId };
+    document.getElementById('seN1').textContent = nameOf(t, winId);
+    document.getElementById('seN2').textContent = nameOf(t, loseId);
+    document.getElementById('seP1').value = m.score ? m.score[0] : '';
+    document.getElementById('seP2').value = m.score ? m.score[1] : '';
+    document.getElementById('scoreEditor').classList.add('show');
+  }
+  function saveScore() {
+    if (!scoreCtx) return;
+    var t = getById(scoreCtx.id);
+    if (t) {
+      var s = [parseInt(document.getElementById('seP1').value, 10) || 0,
+               parseInt(document.getElementById('seP2').value, 10) || 0];
+      BBEngines.setScore(t.state, scoreCtx.matchId, s);
+      upsert(t); renderDetail(scoreCtx.id);
+    }
+    closeScoreEditor();
+  }
+  function clearScore() {
+    if (!scoreCtx) return;
+    var t = getById(scoreCtx.id);
+    if (t) { BBEngines.setScore(t.state, scoreCtx.matchId, null); upsert(t); renderDetail(scoreCtx.id); }
+    closeScoreEditor();
+  }
+  function closeScoreEditor() { document.getElementById('scoreEditor').classList.remove('show'); scoreCtx = null; }
   function renderChampion(t) {
     var eng = BBEngines.get(t.format);
     var box = document.getElementById('tChampion');
@@ -138,12 +202,14 @@
     t.state = eng.undoResult(t.state, t.participants, matchId);
     upsert(t); renderDetail(id);
   }
-  function openTournament(id) { renderDetail(id); showScreen('tournament'); }
+  var openId = null;
+  function openTournament(id) { openId = id; renderDetail(id); showScreen('tournament'); }
 
   // navigation
   document.getElementById('gotoFreeBattle').addEventListener('click', function () { renderList(); showScreen('freebattle'); });
   document.getElementById('fbHomeBtn').addEventListener('click', function () { showScreen('setup'); });
   document.getElementById('tBackBtn').addEventListener('click', function () { renderList(); showScreen('freebattle'); });
+  document.getElementById('tRematchBtn').addEventListener('click', function () { if (openId) rematch(openId); });
 
   // ---------- new tournament wizard ----------
   var FORMAT_DEFS = [
@@ -256,6 +322,10 @@
   document.getElementById('wzAdd').addEventListener('click', addPlayer);
   document.getElementById('wzPlayer').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addPlayer(); } });
   document.getElementById('wzStart').addEventListener('click', startTournament);
+
+  document.getElementById('seOk').addEventListener('click', saveScore);
+  document.getElementById('seClear').addEventListener('click', clearScore);
+  document.getElementById('seCancel').addEventListener('click', closeScoreEditor);
 
   // expose for other tasks/modules
   window.FreeBattle = {
