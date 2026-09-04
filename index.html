@@ -476,6 +476,52 @@ body[data-screen="battle"] #fsBtn{display:none}
 .wzplayers{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .wzchip{border:1px solid rgba(0,255,160,.4);border-radius:16px;padding:3px 10px;font-size:14px;color:#eafff2;display:flex;align-items:center;gap:6px}
 .wzchip button{background:none;border:none;color:#ff8080;cursor:pointer;font-size:15px;line-height:1}
+/* ====== 自由對戰 v2:括號圖 / 比分 / 響應式 ====== */
+.miconbtn{background:none;border:1px solid rgba(0,255,160,.4);color:#9adf9f;border-radius:6px;cursor:pointer;font-size:12px;padding:1px 6px;line-height:1.5}
+.miconbtn:hover{border-color:var(--neon);color:#eafff2}
+.mname.pick{cursor:pointer;border-bottom:1px dotted rgba(0,255,160,.4)}
+.mname.pick:hover{color:#7dffb0}
+/* single-elim bracket */
+.bracket{display:flex;overflow-x:auto;padding:8px 4px 18px;align-items:stretch}
+.bcol{display:flex;flex-direction:column;justify-content:space-around;min-width:132px}
+.bcol.final{justify-content:center}
+.bcell{position:relative;display:flex;flex-direction:column;gap:2px;border:1px solid rgba(0,255,160,.3);border-radius:8px;
+  background:rgba(0,40,25,.4);padding:5px 7px;margin:8px}
+.bcell.champ{border-color:rgba(255,215,0,.7);background:rgba(255,215,0,.1)}
+.bcell.l::after{content:'';position:absolute;right:-9px;top:50%;width:9px;height:1px;background:rgba(0,255,160,.4)}
+.bcell.r::before{content:'';position:absolute;left:-9px;top:50%;width:9px;height:1px;background:rgba(0,255,160,.4)}
+.bp{display:flex;justify-content:space-between;gap:6px;padding:3px 4px;border-radius:4px}
+.bp.pick{cursor:pointer}
+.bp.pick:hover{background:rgba(0,255,160,.12)}
+.bp.win .bpn{color:#7dffb0;font-weight:700}
+.bpn{color:#eafff2;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bp.dim .bpn{color:#9adf9f;font-style:italic}
+.bps{color:#9adf9f;font-size:13px;min-width:14px;text-align:right}
+.btools{display:flex;gap:6px;justify-content:flex-end;margin-top:3px}
+/* score editor modal */
+#scoreEditor{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
+#scoreEditor.show{display:flex}
+.scorerow{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:14px 0}
+.scol{display:flex;flex-direction:column;align-items:center;gap:4px}
+.scol .snm{color:#9adf9f;font-size:13px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scorerow input{width:64px;text-align:center;font-size:18px}
+.sdash{color:#9adf9f;padding-bottom:6px}
+/* responsive */
+@media (max-width:768px){
+  #freebattle,#tournament{padding:0 8px 40px}
+  .bcol{min-width:112px}
+}
+@media (max-width:480px){
+  .fbcard{flex-direction:column;align-items:flex-start;gap:6px}
+  .fbcard .fbdel{align-self:flex-end}
+  .sttable{font-size:13px}
+  .sttable th,.sttable td{padding:6px 6px}
+  .matchrow{gap:4px}
+  .mname{font-size:13px}
+  .bpn{font-size:12px}
+  .bcol{min-width:96px}
+  .bcell{margin:6px}
+}
 </style>
 </head>
 <body>
@@ -728,10 +774,11 @@ body[data-screen="battle"] #fsBtn{display:none}
   <div class="brand">STAND<span class="x">INGS</span><small id="tName">賽事</small></div>
   <div class="subbtns" style="margin-bottom:12px">
     <button class="ghostbtn" id="tBackBtn">↩ 賽事列表</button>
+    <button class="ghostbtn" id="tRematchBtn">♻ 重賽一次</button>
     <span id="tMeta" class="thint"></span>
   </div>
   <div id="tChampion"></div>
-  <h3 class="rules-cat">積分榜</h3>
+  <h3 class="rules-cat" id="tStandingsHead">積分榜</h3>
   <div id="tStandings"></div>
   <h3 class="rules-cat">對戰</h3>
   <div id="tMatches"></div>
@@ -751,6 +798,23 @@ body[data-screen="battle"] #fsBtn{display:none}
     <div class="cbtns">
       <button class="cok" id="wzStart">開始</button>
       <button class="ccancel" id="wzCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 自由對戰:比分編輯 ================= -->
+<div id="scoreEditor">
+  <div class="cwin">
+    <div class="cmsg">輸入比分(選填)</div>
+    <div class="scorerow">
+      <div class="scol"><span class="snm" id="seN1"></span><input id="seP1" type="number" min="0" inputmode="numeric"></div>
+      <span class="sdash">-</span>
+      <div class="scol"><span class="snm" id="seN2"></span><input id="seP2" type="number" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="cbtns">
+      <button class="cok" id="seOk">確定</button>
+      <button class="ccancel" id="seClear">清除</button>
+      <button class="ccancel" id="seCancel">取消</button>
     </div>
   </div>
 </div>
