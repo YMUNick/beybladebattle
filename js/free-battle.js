@@ -233,6 +233,8 @@
     if (isSE) { renderBracket(t); }
     else { renderStandings(t); renderMatches(t); }
   }
+  // Picking/changing a winner clears that match's score by design (recordResult resets
+  // score when no score arg is passed) — the old score described the old result.
   function record(id, matchId, winnerId) {
     var t = getById(id); if (!t) return;
     var eng = BBEngines.get(t.format);
