@@ -206,7 +206,9 @@
         var c1 = rs[r - 1].matches[i * 2], c2 = rs[r - 1].matches[i * 2 + 1];
         m.p1 = c1.winner || null;
         m.p2 = c2.winner || null;
-        if (m.winner && m.winner !== m.p1 && m.winner !== m.p2) { m.winner = null; m.score = null; }
+        // Clear a recorded winner if this match is no longer valid: either feeder slot is
+        // now empty (an earlier result was undone) or the winner is no longer a participant.
+        if (m.winner && (!m.p1 || !m.p2 || (m.winner !== m.p1 && m.winner !== m.p2))) { m.winner = null; m.score = null; }
       });
     }
     var fin = rs[rs.length - 1].matches[0];

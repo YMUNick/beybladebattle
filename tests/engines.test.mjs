@@ -98,6 +98,24 @@ test('single elim: undo a semifinal clears the final slot', () => {
   assert.ok(!finalM.p1 || !finalM.p2); // one slot cleared
 });
 
+test('single elim: undoing a semifinal invalidates an already-decided final and champion', () => {
+  const se = BBEngines.get('single_elim');
+  const players = ps(4);
+  let st = se.init(players, { seed: 'input' });
+  // decide both semifinals (advance p1 of each)
+  const sf1 = st.rounds[0].matches[0], sf2 = st.rounds[0].matches[1];
+  st = se.recordResult(st, players, sf1.id, sf1.p1);
+  st = se.recordResult(st, players, sf2.id, sf2.p1);
+  const finalM = st.rounds[1].matches[0];
+  // crown the finalist that came from sf2, then undo sf1 (the *other* half)
+  st = se.recordResult(st, players, finalM.id, finalM.p2);
+  assert.equal(se.isComplete(st), true);
+  st = se.undoResult(st, players, sf1.id);
+  assert.equal(se.isComplete(st), false, 'final result must be invalidated when a feeder is undone');
+  assert.equal(se.champion(st), null);
+  assert.equal(st.rounds[1].matches[0].winner, null);
+});
+
 test('swiss: fixed number of rounds, round 1 pairs top vs bottom half', () => {
   const sw = BBEngines.get('swiss');
   const players = ps(4);
