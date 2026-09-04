@@ -70,6 +70,7 @@
   function tallyStandings(state, participants) {
     var map = {};
     participants.forEach(function (p) {
+      // `byes` is computation-only (used to exclude byes from winPct); it is not displayed.
       map[p.id] = { rank: 0, playerId: p.id, name: p.name, wins: 0, losses: 0, byes: 0, winPct: 0, diff: 0 };
     });
     eachMatch(state, function (m) {

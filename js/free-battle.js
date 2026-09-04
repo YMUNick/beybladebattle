@@ -157,8 +157,7 @@
     if (fmt === 'single_elim') {
       return '<label class="wlabel">種子順序</label>' +
         '<div class="format-row"><button class="fmt sel" data-seed="input">依輸入順序</button>' +
-        '<button class="fmt" data-seed="random">隨機</button></div>' +
-        '<label class="wlabel"><input type="checkbox" id="wzThird"> 加打季軍賽</label>';
+        '<button class="fmt" data-seed="random">隨機</button></div>';
     }
     if (fmt === 'swiss') {
       var def = Math.max(3, Math.ceil(Math.log2(Math.max(2, wz.players.length))));
@@ -228,7 +227,6 @@
     if (wz.format === 'single_elim') {
       var seedBtn = document.querySelector('#wzOptions [data-seed].sel');
       o.seed = seedBtn ? seedBtn.getAttribute('data-seed') : 'input';
-      o.thirdPlace = !!document.getElementById('wzThird') && document.getElementById('wzThird').checked;
     } else if (wz.format === 'swiss') {
       o.rounds = Math.max(1, parseInt(document.getElementById('wzRounds').value, 10) || 3);
     } else {
@@ -245,7 +243,7 @@
     var state = eng.init(participants, collectOptions());
     var t = {
       id: 't_' + Date.now().toString(36),
-      name: name, format: wz.format, options: state.options,
+      name: name, format: wz.format,
       createdAt: Date.now(), participants: participants, state: state
     };
     upsert(t);
