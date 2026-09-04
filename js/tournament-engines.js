@@ -109,8 +109,66 @@
     tallyStandings: tallyStandings, allDecided: allDecided
   };
 
+  // ---------- Round Robin ----------
+  function rrInit(participants, options) {
+    options = options || {};
+    var ids = participants.map(function (p) { return p.id; });
+    var arr = ids.slice();
+    if (arr.length % 2 !== 0) arr.push(null); // null = BYE seat
+    var n = arr.length, roundsCount = n - 1;
+    var rounds = [], mc = 0;
+    var passes = options.doubleRound ? 2 : 1;
+    for (var pass = 0; pass < passes; pass++) {
+      var order = arr.slice();
+      for (var r = 0; r < roundsCount; r++) {
+        var matches = [];
+        for (var i = 0; i < n / 2; i++) {
+          var a = order[i], b = order[n - 1 - i];
+          if (a === null || b === null) {
+            var solo = a === null ? b : a;
+            if (solo != null) {
+              matches.push({ id: 'm' + (++mc), p1: solo, p2: null, winner: solo, score: null, bye: true });
+            }
+          } else {
+            if (pass === 1) { var t = a; a = b; b = t; }
+            matches.push(mkMatch(++mc, a, b));
+          }
+        }
+        rounds.push({ index: rounds.length + 1, matches: matches });
+        var fixed = order[0], rest = order.slice(1);
+        rest.unshift(rest.pop());
+        order = [fixed].concat(rest);
+      }
+    }
+    return { format: 'round_robin', options: options, rounds: rounds, completed: false, champion: null };
+  }
+  function rrRecord(state, participants, matchId, winnerId, score) {
+    var m = findMatch(state, matchId);
+    if (!m || m.bye) return state;
+    if (winnerId !== m.p1 && winnerId !== m.p2) return state;
+    m.winner = winnerId; m.score = score || null;
+    state.completed = allDecided(state);
+    state.champion = state.completed ? tallyStandings(state, participants)[0].playerId : null;
+    return state;
+  }
+  function rrUndo(state, participants, matchId) {
+    var m = findMatch(state, matchId);
+    if (!m || m.bye) return state;
+    m.winner = null; m.score = null;
+    state.completed = false; state.champion = null;
+    return state;
+  }
+  var roundRobin = {
+    init: rrInit, recordResult: rrRecord, undoResult: rrUndo,
+    standings: tallyStandings,
+    isComplete: function (s) { return s.completed; },
+    champion: function (s, p) { return s.completed ? tallyStandings(s, p)[0].playerId : null; },
+    view: function (s) { return { type: 'rounds', rounds: s.rounds }; }
+  };
+
   // engines are attached in later tasks
   var BBEngines = {
+    round_robin: roundRobin,
     _util: util,
     get: function (fmt) { return this[fmt]; }
   };
