@@ -264,6 +264,15 @@ test('single elim bracket: 8 players -> two columns per side, sizes 2 then 1', (
   assert.ok(b.final);
 });
 
+test('single elim bracket: 6 players (byes) still splits round-of-8 cleanly', () => {
+  const se = BBEngines.get('single_elim');
+  const b = se.bracket(se.init(ps(6), { seed: 'input' }));
+  assert.equal(b.left.length, 2);
+  assert.equal(b.left[0].length, 2);  // round of 8, left half = 2 matches (some byes)
+  assert.equal(b.right[0].length, 2); // right half = 2 matches
+  assert.ok(b.final);
+});
+
 test('setScore sets and clears a match score without touching the winner', () => {
   const rr = BBEngines.get('round_robin');
   const players = ps(4);
