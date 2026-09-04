@@ -59,3 +59,41 @@ test('round robin: recording results produces standings and champion when comple
   assert.equal(table[0].playerId, 'p1');
   assert.equal(table[0].rank, 1);
 });
+
+test('single elim: 4 players -> 2 rounds, champion after final', () => {
+  const se = BBEngines.get('single_elim');
+  const players = ps(4);
+  let st = se.init(players, { seed: 'input' });
+  assert.equal(st.rounds.length, 2);
+  assert.equal(st.rounds[0].matches.length, 2);
+  // decide semifinals
+  st.rounds[0].matches.forEach(m => { st = se.recordResult(st, players, m.id, m.p1); });
+  // final now has both players filled
+  const finalMatch = st.rounds[1].matches[0];
+  assert.ok(finalMatch.p1 && finalMatch.p2);
+  st = se.recordResult(st, players, finalMatch.id, finalMatch.p1);
+  assert.equal(se.isComplete(st), true);
+  assert.equal(se.champion(st, players), finalMatch.p1);
+});
+
+test('single elim: 6 players -> byes auto-advance top seeds', () => {
+  const se = BBEngines.get('single_elim');
+  const players = ps(6);
+  const st = se.init(players, { seed: 'input' });
+  assert.equal(st.rounds.length, 3); // bracket size 8
+  const byes = st.rounds[0].matches.filter(m => m.bye);
+  assert.equal(byes.length, 2);
+  byes.forEach(m => assert.ok(m.winner)); // bye winner set
+});
+
+test('single elim: undo a semifinal clears the final slot', () => {
+  const se = BBEngines.get('single_elim');
+  const players = ps(4);
+  let st = se.init(players, { seed: 'input' });
+  const sf = st.rounds[0].matches[0];
+  st = se.recordResult(st, players, sf.id, sf.p1);
+  assert.ok(st.rounds[1].matches[0].p1 || st.rounds[1].matches[0].p2);
+  st = se.undoResult(st, players, sf.id);
+  const finalM = st.rounds[1].matches[0];
+  assert.ok(!finalM.p1 || !finalM.p2); // one slot cleared
+});

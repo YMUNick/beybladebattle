@@ -166,9 +166,104 @@
     view: function (s) { return { type: 'rounds', rounds: s.rounds }; }
   };
 
+  // ---------- Single Elimination ----------
+  function seInit(participants, options) {
+    options = options || {};
+    var ids = participants.map(function (p) { return p.id; });
+    if (options.seed === 'random') ids = shuffle(ids);
+    var n = ids.length, size = nextPow2(n);
+    var order = seedOrder(size); // seed numbers per bracket slot
+    var seats = order.map(function (s) { return s <= n ? ids[s - 1] : null; });
+    var rounds = [], mc = 0, r1 = [];
+    for (var i = 0; i < size; i += 2) {
+      var a = seats[i], b = seats[i + 1];
+      var m = mkMatch(++mc, a, b);
+      if (a == null && b != null) { m.winner = b; m.bye = true; }
+      else if (b == null && a != null) { m.winner = a; m.bye = true; }
+      r1.push(m);
+    }
+    rounds.push({ index: 1, matches: r1 });
+    var prev = r1.length, idx = 2;
+    while (prev > 1) {
+      var ms = [];
+      for (var k = 0; k < prev / 2; k++) ms.push(mkMatch(++mc, null, null));
+      rounds.push({ index: idx++, matches: ms });
+      prev = ms.length;
+    }
+    var state = { format: 'single_elim', options: options, rounds: rounds, completed: false, champion: null };
+    seRecompute(state);
+    return state;
+  }
+  function seRecompute(state) {
+    var rs = state.rounds;
+    for (var r = 1; r < rs.length; r++) {
+      rs[r].matches.forEach(function (m, i) {
+        var c1 = rs[r - 1].matches[i * 2], c2 = rs[r - 1].matches[i * 2 + 1];
+        m.p1 = c1.winner || null;
+        m.p2 = c2.winner || null;
+        if (m.winner && m.winner !== m.p1 && m.winner !== m.p2) { m.winner = null; m.score = null; }
+      });
+    }
+    var fin = rs[rs.length - 1].matches[0];
+    state.champion = fin.winner || null;
+    state.completed = !!state.champion;
+  }
+  function seRecord(state, participants, matchId, winnerId, score) {
+    var m = findMatch(state, matchId);
+    if (!m || m.bye) return state;
+    if (winnerId !== m.p1 && winnerId !== m.p2) return state;
+    m.winner = winnerId; m.score = score || null;
+    seRecompute(state);
+    return state;
+  }
+  function seUndo(state, participants, matchId) {
+    var m = findMatch(state, matchId);
+    if (!m || m.bye) return state;
+    m.winner = null; m.score = null;
+    seRecompute(state);
+    return state;
+  }
+  function seStandings(state, participants) {
+    var info = {};
+    participants.forEach(function (p) {
+      info[p.id] = { rank: 0, playerId: p.id, name: p.name, wins: 0, losses: 0, winPct: 0, diff: 0, elimRound: 0 };
+    });
+    eachMatch(state, function (m, r) {
+      if (m.bye || m.winner == null) return;
+      var l = (m.winner === m.p1 ? m.p2 : m.p1);
+      if (info[m.winner]) info[m.winner].wins++;
+      if (l && info[l]) { info[l].losses++; info[l].elimRound = r + 1; }
+    });
+    var rows = Object.keys(info).map(function (k) { return info[k]; });
+    rows.forEach(function (x) { var g = x.wins + x.losses; x.winPct = g ? x.wins / g : 0; });
+    var champ = state.champion;
+    rows.sort(function (a, b) {
+      var ca = a.playerId === champ ? 1 : 0, cb = b.playerId === champ ? 1 : 0;
+      return (cb - ca) || (b.elimRound - a.elimRound) || a.name.localeCompare(b.name);
+    });
+    var rank = 1;
+    rows.forEach(function (r, i) {
+      if (i > 0) {
+        var prev = rows[i - 1];
+        var tie = r.playerId !== champ && prev.playerId !== champ && r.elimRound === prev.elimRound;
+        rank = tie ? rank : i + 1;
+      }
+      r.rank = rank;
+    });
+    return rows;
+  }
+  var singleElim = {
+    init: seInit, recordResult: seRecord, undoResult: seUndo,
+    standings: seStandings,
+    isComplete: function (s) { return s.completed; },
+    champion: function (s) { return s.champion; },
+    view: function (s) { return { type: 'bracket', rounds: s.rounds }; }
+  };
+
   // engines are attached in later tasks
   var BBEngines = {
     round_robin: roundRobin,
+    single_elim: singleElim,
     _util: util,
     get: function (fmt) { return this[fmt]; }
   };
