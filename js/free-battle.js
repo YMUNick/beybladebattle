@@ -2,7 +2,6 @@
 (function () {
   'use strict';
   var KEY = 'bb_tournaments';
-  var current = null; // currently open tournament id
 
   function load() {
     try { return JSON.parse(localStorage.getItem(KEY)) || []; }
@@ -139,7 +138,7 @@
     t.state = eng.undoResult(t.state, t.participants, matchId);
     upsert(t); renderDetail(id);
   }
-  function openTournament(id) { current = id; renderDetail(id); showScreen('tournament'); }
+  function openTournament(id) { renderDetail(id); showScreen('tournament'); }
 
   // navigation
   document.getElementById('gotoFreeBattle').addEventListener('click', function () { renderList(); showScreen('freebattle'); });
