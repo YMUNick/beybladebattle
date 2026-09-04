@@ -58,8 +58,88 @@
     });
   }
 
-  // openTournament + renderDetail implemented in Task 9; stub for now:
-  function openTournament(id) { current = id; if (window.__renderDetail) window.__renderDetail(id); showScreen('tournament'); }
+  function nameOf(t, pid) {
+    if (pid == null) return '—';
+    var p = t.participants.filter(function (x) { return x.id === pid; })[0];
+    return p ? p.name : '—';
+  }
+  function renderStandings(t) {
+    var eng = BBEngines.get(t.format);
+    var rows = eng.standings(t.state, t.participants);
+    var champ = eng.champion(t.state, t.participants);
+    var html = '<table class="sttable"><thead><tr>' +
+      '<th>#</th><th>選手</th><th>勝-敗</th><th>勝率</th><th>積分差</th></tr></thead><tbody>';
+    rows.forEach(function (r) {
+      html += '<tr class="' + (r.playerId === champ ? 'champrow' : '') + '">' +
+        '<td>' + r.rank + '</td>' +
+        '<td class="stname">' + esc(r.name) + '</td>' +
+        '<td>' + r.wins + '-' + r.losses + '</td>' +
+        '<td>' + Math.round(r.winPct * 100) + '%</td>' +
+        '<td>' + (r.diff > 0 ? '+' : '') + r.diff + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('tStandings').innerHTML = html;
+  }
+  function matchRowHtml(t, m) {
+    if (m.bye) {
+      return '<div class="matchrow"><span class="mbye">' + esc(nameOf(t, m.p1)) + ' — 輪空(自動晉級)</span></div>';
+    }
+    var decided = m.winner != null;
+    var p1w = m.winner === m.p1, p2w = m.winner === m.p2;
+    var left = '<div class="mside">' +
+      '<span class="mname ' + (p1w ? 'win' : '') + '">' + esc(nameOf(t, m.p1)) + '</span>' +
+      (decided || m.p1 == null ? '' : '<button class="winbtn" data-win="' + m.id + '|' + m.p1 + '">勝</button>') + '</div>';
+    var mid = decided
+      ? '<span class="mvs">' + (m.score ? m.score[0] + '-' + m.score[1] : 'VS') + ' <button class="mundo" data-undo="' + m.id + '">復原</button></span>'
+      : '<span class="mvs">VS</span>';
+    var right = '<div class="mside right">' +
+      (decided || m.p2 == null ? '' : '<button class="winbtn" data-win="' + m.id + '|' + m.p2 + '">勝</button>') +
+      '<span class="mname ' + (p2w ? 'win' : '') + '">' + esc(nameOf(t, m.p2)) + '</span></div>';
+    return '<div class="matchrow">' + left + mid + right + '</div>';
+  }
+  function renderMatches(t) {
+    var box = document.getElementById('tMatches');
+    box.innerHTML = t.state.rounds.map(function (rd) {
+      return '<div class="rnd"><div class="rndh">第 ' + rd.index + ' 輪</div>' +
+        rd.matches.map(function (m) { return matchRowHtml(t, m); }).join('') + '</div>';
+    }).join('');
+    box.querySelectorAll('[data-win]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var parts = b.getAttribute('data-win').split('|');
+        record(t.id, parts[0], parts[1]);
+      });
+    });
+    box.querySelectorAll('[data-undo]').forEach(function (b) {
+      b.addEventListener('click', function () { undo(t.id, b.getAttribute('data-undo')); });
+    });
+  }
+  function renderChampion(t) {
+    var eng = BBEngines.get(t.format);
+    var box = document.getElementById('tChampion');
+    if (eng.isComplete(t.state)) {
+      box.innerHTML = '<div class="champbanner">🏆 冠軍:' + esc(nameOf(t, eng.champion(t.state, t.participants))) + '</div>';
+    } else box.innerHTML = '';
+  }
+  function renderDetail(id) {
+    var t = getById(id);
+    if (!t) { showScreen('freebattle'); return; }
+    document.getElementById('tName').textContent = t.name;
+    document.getElementById('tMeta').textContent = FORMAT_LABELS[t.format] + '・' + t.participants.length + ' 人・' + progressText(t);
+    renderChampion(t); renderStandings(t); renderMatches(t);
+  }
+  function record(id, matchId, winnerId) {
+    var t = getById(id); if (!t) return;
+    var eng = BBEngines.get(t.format);
+    t.state = eng.recordResult(t.state, t.participants, matchId, winnerId);
+    upsert(t); renderDetail(id);
+  }
+  function undo(id, matchId) {
+    var t = getById(id); if (!t) return;
+    var eng = BBEngines.get(t.format);
+    t.state = eng.undoResult(t.state, t.participants, matchId);
+    upsert(t); renderDetail(id);
+  }
+  function openTournament(id) { current = id; renderDetail(id); showScreen('tournament'); }
 
   // navigation
   document.getElementById('gotoFreeBattle').addEventListener('click', function () { renderList(); showScreen('freebattle'); });
