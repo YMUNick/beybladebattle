@@ -102,7 +102,10 @@ Create `js/tournament-engines.js`:
     var seeds = [1, 2];
     for (var r = 1; r < rounds; r++) {
       var next = [], sum = Math.pow(2, r + 1) + 1;
-      for (var i = 0; i < seeds.length; i++) { next.push(seeds[i]); next.push(sum - seeds[i]); }
+      for (var i = 0; i < seeds.length; i++) {
+        if (i % 2 === 0) { next.push(seeds[i]); next.push(sum - seeds[i]); }
+        else { next.push(sum - seeds[i]); next.push(seeds[i]); }
+      }
       seeds = next;
     }
     return seeds;
