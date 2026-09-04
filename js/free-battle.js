@@ -66,6 +66,120 @@
   document.getElementById('fbHomeBtn').addEventListener('click', function () { showScreen('setup'); });
   document.getElementById('tBackBtn').addEventListener('click', function () { renderList(); showScreen('freebattle'); });
 
+  // ---------- new tournament wizard ----------
+  var FORMAT_DEFS = [
+    { key: 'round_robin', name: '循環賽', desc: '每人互打一場,依總勝場排名。最公平。' },
+    { key: 'single_elim', name: '單淘汰', desc: '輸一場淘汰,勝者晉級到冠軍。最快。' },
+    { key: 'swiss', name: '瑞士制', desc: '不淘汰,每輪依戰績配對,打固定輪數。' }
+  ];
+  var wz = { format: 'round_robin', players: [] };
+
+  function optionsHtml(fmt) {
+    if (fmt === 'single_elim') {
+      return '<label class="wlabel">種子順序</label>' +
+        '<div class="format-row"><button class="fmt sel" data-seed="input">依輸入順序</button>' +
+        '<button class="fmt" data-seed="random">隨機</button></div>' +
+        '<label class="wlabel"><input type="checkbox" id="wzThird"> 加打季軍賽</label>';
+    }
+    if (fmt === 'swiss') {
+      var def = Math.max(3, Math.ceil(Math.log2(Math.max(2, wz.players.length))));
+      return '<label class="wlabel">輪數</label>' +
+        '<input id="wzRounds" type="number" min="1" max="12" value="' + def + '" style="width:80px">';
+    }
+    return '<label class="wlabel">循環方式</label>' +
+      '<div class="format-row"><button class="fmt sel" data-dbl="0">單循環</button>' +
+      '<button class="fmt" data-dbl="1">雙循環</button></div>';
+  }
+
+  function renderFormats() {
+    document.getElementById('wzFormats').innerHTML = FORMAT_DEFS.map(function (f) {
+      return '<div class="wzfmt' + (f.key === wz.format ? ' sel' : '') + '" data-fmt="' + f.key + '">' +
+        '<b>' + f.name + '</b><small>' + f.desc + '</small></div>';
+    }).join('');
+    document.querySelectorAll('#wzFormats .wzfmt').forEach(function (el) {
+      el.addEventListener('click', function () { wz.format = el.getAttribute('data-fmt'); renderFormats(); renderOptions(); });
+    });
+  }
+  function renderOptions() {
+    var box = document.getElementById('wzOptions');
+    box.innerHTML = optionsHtml(wz.format);
+    box.querySelectorAll('[data-seed]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        box.querySelectorAll('[data-seed]').forEach(function (x) { x.classList.remove('sel'); });
+        b.classList.add('sel');
+      });
+    });
+    box.querySelectorAll('[data-dbl]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        box.querySelectorAll('[data-dbl]').forEach(function (x) { x.classList.remove('sel'); });
+        b.classList.add('sel');
+      });
+    });
+  }
+  function renderPlayers() {
+    document.getElementById('wzPlayers').innerHTML = wz.players.map(function (n, i) {
+      return '<span class="wzchip">' + esc(n) + '<button data-i="' + i + '">×</button></span>';
+    }).join('');
+    document.querySelectorAll('#wzPlayers .wzchip button').forEach(function (b) {
+      b.addEventListener('click', function () { wz.players.splice(+b.getAttribute('data-i'), 1); renderPlayers(); });
+    });
+  }
+  function uniqueName(name) {
+    var base = name, n = 2;
+    while (wz.players.indexOf(name) >= 0) { name = base + ' ' + (n++); }
+    return name;
+  }
+  function addPlayer() {
+    var inp = document.getElementById('wzPlayer');
+    var v = (inp.value || '').trim();
+    if (!v) return;
+    wz.players.push(uniqueName(v));
+    inp.value = ''; inp.focus(); renderPlayers();
+  }
+  function openWizard() {
+    wz = { format: 'round_robin', players: [] };
+    document.getElementById('wzName').value = '自由對戰 ' + new Date().toLocaleDateString('zh-TW');
+    renderFormats(); renderOptions(); renderPlayers();
+    document.getElementById('fbWizard').classList.add('show');
+  }
+  function closeWizard() { document.getElementById('fbWizard').classList.remove('show'); }
+
+  function collectOptions() {
+    var o = {};
+    if (wz.format === 'single_elim') {
+      var seedBtn = document.querySelector('#wzOptions [data-seed].sel');
+      o.seed = seedBtn ? seedBtn.getAttribute('data-seed') : 'input';
+      o.thirdPlace = !!document.getElementById('wzThird') && document.getElementById('wzThird').checked;
+    } else if (wz.format === 'swiss') {
+      o.rounds = Math.max(1, parseInt(document.getElementById('wzRounds').value, 10) || 3);
+    } else {
+      var dbl = document.querySelector('#wzOptions [data-dbl].sel');
+      o.doubleRound = dbl ? dbl.getAttribute('data-dbl') === '1' : false;
+    }
+    return o;
+  }
+  function startTournament() {
+    if (wz.players.length < 2) { if (window.toast) toast('至少需要 2 位參賽者'); return; }
+    var name = (document.getElementById('wzName').value || '').trim() || '自由對戰';
+    var participants = wz.players.map(function (n, i) { return { id: 'p' + (i + 1), name: n }; });
+    var eng = BBEngines.get(wz.format);
+    var state = eng.init(participants, collectOptions());
+    var t = {
+      id: 't_' + Date.now().toString(36),
+      name: name, format: wz.format, options: state.options,
+      createdAt: Date.now(), participants: participants, state: state
+    };
+    upsert(t);
+    closeWizard();
+    openTournament(t.id);
+  }
+
+  document.getElementById('fbNewBtn').addEventListener('click', openWizard);
+  document.getElementById('wzCancel').addEventListener('click', closeWizard);
+  document.getElementById('wzAdd').addEventListener('click', addPlayer);
+  document.getElementById('wzPlayer').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addPlayer(); } });
+  document.getElementById('wzStart').addEventListener('click', startTournament);
+
   // expose for other tasks/modules
   window.FreeBattle = {
     load: load, save: save, getById: getById, upsert: upsert, remove: remove,
