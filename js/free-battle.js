@@ -183,12 +183,55 @@
       box.innerHTML = '<div class="champbanner">🏆 冠軍:' + esc(nameOf(t, eng.champion(t.state, t.participants))) + '</div>';
     } else box.innerHTML = '';
   }
+  function bracketCellHtml(t, m, side, champId) {
+    if (!m) return '<div class="bcell ' + side + '"><div class="bp dim"><span class="bpn">—</span></div></div>';
+    if (m.bye) {
+      return '<div class="bcell ' + side + '">' +
+        '<div class="bp win"><span class="bpn">' + esc(nameOf(t, m.p1)) + '</span></div>' +
+        '<div class="bp dim"><span class="bpn">輪空</span></div></div>';
+    }
+    var decided = m.winner != null;
+    function bp(pid, isWin) {
+      var clickable = pid != null;
+      var sc = m.score ? (isWin ? m.score[0] : m.score[1]) : '';
+      return '<div class="bp' + (isWin ? ' win' : '') + (clickable ? ' pick' : ' dim') + '"' +
+        (clickable ? ' data-pick="' + m.id + '|' + pid + '"' : '') + '>' +
+        '<span class="bpn">' + esc(nameOf(t, pid)) + '</span><span class="bps">' + sc + '</span></div>';
+    }
+    var champ = (champId && m.winner === champId && side === 'final') ? ' champ' : '';
+    var tools = decided
+      ? '<div class="btools"><button class="miconbtn" data-score="' + m.id + '" title="比分">✎</button>' +
+        '<button class="miconbtn" data-undo="' + m.id + '" title="清除">↺</button></div>'
+      : '';
+    return '<div class="bcell ' + side + champ + '">' + bp(m.p1, m.winner === m.p1) + bp(m.p2, m.winner === m.p2) + tools + '</div>';
+  }
+  function bracketColHtml(t, matches, side, champId) {
+    return '<div class="bcol' + (side === 'final' ? ' final' : '') + '">' +
+      matches.map(function (m) { return bracketCellHtml(t, m, side, champId); }).join('') + '</div>';
+  }
+  function renderBracket(t) {
+    var b = BBEngines.get('single_elim').bracket(t.state);
+    var champId = BBEngines.get('single_elim').champion(t.state);
+    var html = '<div class="bracket">';
+    b.left.forEach(function (rm) { html += bracketColHtml(t, rm, 'l', champId); });
+    html += bracketColHtml(t, b.final ? [b.final] : [], 'final', champId);
+    b.right.slice().reverse().forEach(function (rm) { html += bracketColHtml(t, rm, 'r', champId); });
+    html += '</div>';
+    var box = document.getElementById('tMatches');
+    box.innerHTML = html;
+    wireMatchControls(box, t.id);
+  }
   function renderDetail(id) {
     var t = getById(id);
     if (!t) { showScreen('freebattle'); return; }
     document.getElementById('tName').textContent = t.name;
     document.getElementById('tMeta').textContent = FORMAT_LABELS[t.format] + '・' + t.participants.length + ' 人・' + progressText(t);
-    renderChampion(t); renderStandings(t); renderMatches(t);
+    var isSE = t.format === 'single_elim';
+    document.getElementById('tStandingsHead').style.display = isSE ? 'none' : '';
+    document.getElementById('tStandings').style.display = isSE ? 'none' : '';
+    renderChampion(t);
+    if (isSE) { renderBracket(t); }
+    else { renderStandings(t); renderMatches(t); }
   }
   function record(id, matchId, winnerId) {
     var t = getById(id); if (!t) return;
