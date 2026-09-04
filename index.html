@@ -468,6 +468,7 @@ body[data-screen="battle"] #fsBtn{display:none}
   <button class="bigbtn" id="startBtn">進入對戰</button>
 
   <div class="subbtns">
+    <button class="ghostbtn" id="gotoFreeBattle">⚔ 自由對戰</button>
     <button class="ghostbtn" id="gotoLog">📄 對戰紀錄</button>
     <button class="ghostbtn" id="gotoEvents">🔍 賽事搜尋</button>
     <button class="ghostbtn" id="gotoRules">📖 賽事規則</button>
@@ -662,6 +663,48 @@ body[data-screen="battle"] #fsBtn{display:none}
     <br><span class="rnote">※ 實際分數/規則以各賽事公告與官方 Beyblade X 規則為準。</span></div>
   </details>
 </section>
+
+<!-- ================= 自由對戰:賽事列表 ================= -->
+<section class="screen" id="freebattle">
+  <div class="brand">FREE<span class="x">BATTLE</span><small>自由對戰・賽事舉辦</small></div>
+  <div class="subbtns" style="margin-bottom:12px">
+    <button class="ghostbtn" id="fbNewBtn">＋ 新增比賽</button>
+    <button class="ghostbtn" id="fbHomeBtn">🏠 回到設定</button>
+  </div>
+  <div id="fbList"></div>
+</section>
+
+<!-- ================= 自由對戰:賽事詳情 ================= -->
+<section class="screen" id="tournament">
+  <div class="brand">STAND<span class="x">INGS</span><small id="tName">賽事</small></div>
+  <div class="subbtns" style="margin-bottom:12px">
+    <button class="ghostbtn" id="tBackBtn">↩ 賽事列表</button>
+    <span id="tMeta" class="thint"></span>
+  </div>
+  <div id="tChampion"></div>
+  <h3 class="rules-cat">積分榜</h3>
+  <div id="tStandings"></div>
+  <h3 class="rules-cat">對戰</h3>
+  <div id="tMatches"></div>
+</section>
+
+<!-- ================= 自由對戰:新增比賽彈窗 ================= -->
+<div id="fbWizard">
+  <div class="cwin wide">
+    <div class="wtitle">新增比賽</div>
+    <div class="field"><label>比賽名稱</label><input id="wzName" maxlength="24" placeholder="例如:週五 4PM 自由對戰"></div>
+    <label class="wlabel">選擇制度</label>
+    <div id="wzFormats" class="wzfmts"></div>
+    <div id="wzOptions"></div>
+    <label class="wlabel">參賽者</label>
+    <div class="wzaddrow"><input id="wzPlayer" maxlength="12" placeholder="輸入姓名後按新增"><button class="ctrl" id="wzAdd">新增</button></div>
+    <div id="wzPlayers" class="wzplayers"></div>
+    <div class="cbtns">
+      <button class="cok" id="wzStart">開始</button>
+      <button class="ccancel" id="wzCancel">取消</button>
+    </div>
+  </div>
+</div>
 
 <div id="confirmBox">
   <div class="cwin">
@@ -1353,5 +1396,7 @@ document.getElementById('rulesHomeBtn').addEventListener('click',()=>showScreen(
   await loadBlades();
 })();
 </script>
+<script src="js/tournament-engines.js"></script>
+<script src="js/free-battle.js"></script>
 </body>
 </html>
