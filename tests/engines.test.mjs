@@ -97,3 +97,51 @@ test('single elim: undo a semifinal clears the final slot', () => {
   const finalM = st.rounds[1].matches[0];
   assert.ok(!finalM.p1 || !finalM.p2); // one slot cleared
 });
+
+test('swiss: fixed number of rounds, round 1 pairs top vs bottom half', () => {
+  const sw = BBEngines.get('swiss');
+  const players = ps(4);
+  const st = sw.init(players, { rounds: 3 });
+  assert.equal(st.options.rounds, 3);
+  assert.equal(st.rounds.length, 1); // only round 1 generated up front
+  assert.equal(st.rounds[0].matches.length, 2);
+});
+
+test('swiss: next round is generated only after current round fully recorded, avoids rematches', () => {
+  const sw = BBEngines.get('swiss');
+  const players = ps(4);
+  let st = sw.init(players, { rounds: 2 });
+  const r1 = st.rounds[0].matches.map(m => [m.p1, m.p2]);
+  st.rounds[0].matches.forEach(m => { st = sw.recordResult(st, players, m.id, m.p1); });
+  assert.equal(st.rounds.length, 2); // round 2 now exists
+  // no round-2 pairing repeats a round-1 pairing
+  st.rounds[1].matches.forEach(m => {
+    const repeat = r1.some(pr => (pr[0] === m.p1 && pr[1] === m.p2) || (pr[0] === m.p2 && pr[1] === m.p1));
+    assert.equal(repeat, false);
+  });
+});
+
+test('swiss: odd players -> exactly one bye per round, no repeat bye while avoidable', () => {
+  const sw = BBEngines.get('swiss');
+  const players = ps(5);
+  let st = sw.init(players, { rounds: 2 });
+  const byes1 = st.rounds[0].matches.filter(m => m.bye);
+  assert.equal(byes1.length, 1);
+  st.rounds[0].matches.forEach(m => { if (!m.bye) st = sw.recordResult(st, players, m.id, m.p1); });
+  const byeId1 = byes1[0].p1;
+  const byes2 = st.rounds[1].matches.filter(m => m.bye);
+  assert.equal(byes2.length, 1);
+  assert.notEqual(byes2[0].p1, byeId1);
+});
+
+test('swiss: undo drops later generated rounds', () => {
+  const sw = BBEngines.get('swiss');
+  const players = ps(4);
+  let st = sw.init(players, { rounds: 2 });
+  st.rounds[0].matches.forEach(m => { st = sw.recordResult(st, players, m.id, m.p1); });
+  assert.equal(st.rounds.length, 2);
+  const firstMatch = st.rounds[0].matches[0];
+  st = sw.undoResult(st, players, firstMatch.id);
+  assert.equal(st.rounds.length, 1);
+  assert.equal(st.rounds[0].matches[0].winner, null);
+});

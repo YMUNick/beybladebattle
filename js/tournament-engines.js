@@ -260,10 +260,92 @@
     view: function (s) { return { type: 'bracket', rounds: s.rounds }; }
   };
 
+  // ---------- Swiss ----------
+  function swInit(participants, options) {
+    options = options || {};
+    var target = options.rounds || Math.max(1, Math.ceil(Math.log2(participants.length)));
+    var state = { format: 'swiss', options: { rounds: target }, rounds: [], completed: false, champion: null };
+    swGenerate(state, participants, 1);
+    return state;
+  }
+  function swGenerate(state, participants, index) {
+    var order = tallyStandings(state, participants).map(function (r) { return r.playerId; });
+    var pool = order.slice();
+    var mc = countMatches(state);
+    var matches = [];
+    if (pool.length % 2 === 1) {
+      var byeId = null;
+      for (var i = pool.length - 1; i >= 0; i--) { if (!hadBye(state, pool[i])) { byeId = pool[i]; break; } }
+      if (byeId == null) byeId = pool[pool.length - 1];
+      pool = pool.filter(function (id) { return id !== byeId; });
+      matches.push({ id: 'm' + (++mc), p1: byeId, p2: null, winner: byeId, score: null, bye: true });
+    }
+    if (index === 1) {
+      var half = pool.length / 2;
+      for (var k = 0; k < half; k++) matches.push(mkMatch(++mc, pool[k], pool[k + half]));
+    } else {
+      var used = {};
+      for (var a = 0; a < pool.length; a++) {
+        if (used[pool[a]]) continue;
+        var pa = pool[a], paired = false;
+        for (var b = a + 1; b < pool.length; b++) {
+          var pb = pool[b];
+          if (used[pb]) continue;
+          if (!havePlayed(state, pa, pb)) { matches.push(mkMatch(++mc, pa, pb)); used[pa] = used[pb] = true; paired = true; break; }
+        }
+        if (!paired) {
+          for (var c = a + 1; c < pool.length; c++) {
+            var pc = pool[c];
+            if (!used[pc]) { matches.push(mkMatch(++mc, pa, pc)); used[pa] = used[pc] = true; break; }
+          }
+        }
+      }
+    }
+    state.rounds.push({ index: index, matches: matches });
+  }
+  function swRecord(state, participants, matchId, winnerId, score) {
+    var m = findMatch(state, matchId);
+    if (!m || m.bye) return state;
+    if (winnerId !== m.p1 && winnerId !== m.p2) return state;
+    m.winner = winnerId; m.score = score || null;
+    var cur = state.rounds[state.rounds.length - 1];
+    var done = cur.matches.every(function (x) { return x.winner != null; });
+    if (done) {
+      if (state.rounds.length < state.options.rounds) {
+        swGenerate(state, participants, state.rounds.length + 1);
+      } else {
+        state.completed = true;
+        var st = tallyStandings(state, participants);
+        state.champion = st.length ? st[0].playerId : null;
+      }
+    }
+    return state;
+  }
+  function swUndo(state, participants, matchId) {
+    var ri = -1;
+    for (var r = 0; r < state.rounds.length; r++) {
+      if (state.rounds[r].matches.some(function (m) { return m.id === matchId; })) { ri = r; break; }
+    }
+    if (ri < 0) return state;
+    state.rounds = state.rounds.slice(0, ri + 1);
+    var m = findMatch(state, matchId);
+    if (m) { m.winner = null; m.score = null; }
+    state.completed = false; state.champion = null;
+    return state;
+  }
+  var swiss = {
+    init: swInit, recordResult: swRecord, undoResult: swUndo,
+    standings: tallyStandings,
+    isComplete: function (s) { return s.completed; },
+    champion: function (s, p) { return s.completed ? tallyStandings(s, p)[0].playerId : null; },
+    view: function (s) { return { type: 'rounds', rounds: s.rounds }; }
+  };
+
   // engines are attached in later tasks
   var BBEngines = {
     round_robin: roundRobin,
     single_elim: singleElim,
+    swiss: swiss,
     _util: util,
     get: function (fmt) { return this[fmt]; }
   };
