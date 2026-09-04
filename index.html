@@ -427,6 +427,55 @@ input,select{font-family:inherit}
 body[data-screen="battle"] #fsBtn{display:none}
 /* 已用「加入主畫面」全螢幕開啟時,不需要這顆按鈕 */
 @media (display-mode:standalone),(display-mode:fullscreen){#fsBtn{display:none}}
+/* ====== 自由對戰 ====== */
+#freebattle,#tournament{padding:0 14px 40px;max-width:900px;margin:0 auto;width:100%}
+.thint{color:#9adf9f;font-size:14px;align-self:center;letter-spacing:.1em}
+.fbcard{border:1px solid rgba(0,255,160,.35);border-radius:12px;padding:12px 14px;margin-bottom:10px;
+  background:rgba(0,40,25,.35);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fbcard:hover{border-color:var(--neon);box-shadow:var(--neon-glow)}
+.fbcard .fbtitle{font-size:17px;color:#eafff2}
+.fbcard .fbsub{font-size:13px;color:#9adf9f;margin-top:3px;letter-spacing:.05em}
+.fbcard .fbdel{background:none;border:1px solid rgba(255,80,80,.5);color:#ff8080;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:13px}
+.fbempty{color:#9adf9f;text-align:center;padding:30px 10px;letter-spacing:.1em}
+/* standings table */
+.sttable{width:100%;border-collapse:collapse;font-size:15px;overflow-x:auto;display:block}
+.sttable th,.sttable td{padding:8px 10px;text-align:center;white-space:nowrap}
+.sttable thead th{color:var(--neon);text-shadow:var(--neon-glow);border-bottom:1px solid rgba(0,255,160,.4);letter-spacing:.15em;font-size:13px}
+.sttable tbody tr:nth-child(odd){background:rgba(0,50,32,.3)}
+.sttable td.stname{text-align:left;color:#eafff2}
+.sttable tr.champrow{background:rgba(255,215,0,.15)!important}
+.sttable tr.champrow td{color:#ffe66a}
+/* matches */
+.rnd{margin-bottom:16px}
+.rndh{color:var(--neon);letter-spacing:.2em;font-size:14px;margin:8px 0}
+.matchrow{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px dashed rgba(0,255,160,.18)}
+.mside{flex:1;display:flex;align-items:center;gap:6px;min-width:0}
+.mside.right{justify-content:flex-end}
+.mname{color:#eafff2;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mname.win{color:#7dffb0;font-weight:700}
+.winbtn{background:none;border:1px solid rgba(0,255,160,.5);color:#9adf9f;border-radius:8px;padding:4px 9px;cursor:pointer;font-size:13px}
+.winbtn:hover{border-color:var(--neon);color:#eafff2}
+.mvs{color:#5f8f74;font-size:12px}
+.mundo{background:none;border:none;color:#8fb;cursor:pointer;font-size:12px;text-decoration:underline}
+.mbye{color:#9adf9f;font-size:14px;font-style:italic}
+.champbanner{border:1px solid rgba(255,215,0,.6);background:rgba(255,215,0,.12);color:#ffe66a;
+  border-radius:12px;padding:12px;text-align:center;letter-spacing:.2em;margin-bottom:14px;font-size:18px}
+/* wizard */
+#fbWizard{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}
+#fbWizard.show{display:flex}
+#fbWizard .cwin.wide{max-width:460px;width:100%;text-align:left;max-height:90vh;overflow-y:auto}
+.wtitle{font-size:20px;color:var(--neon);text-shadow:var(--neon-glow);letter-spacing:.2em;margin-bottom:12px;text-align:center}
+.wlabel{display:block;font-size:14px;color:#9adf9f;letter-spacing:.15em;margin:12px 0 6px}
+.wzfmts{display:flex;flex-direction:column;gap:8px}
+.wzfmt{border:1px solid rgba(0,255,160,.3);border-radius:10px;padding:8px 10px;cursor:pointer}
+.wzfmt.sel{border-color:var(--neon);box-shadow:var(--neon-glow)}
+.wzfmt b{color:#eafff2}
+.wzfmt small{display:block;color:#9adf9f;font-size:12px;margin-top:3px}
+.wzaddrow{display:flex;gap:8px}
+.wzaddrow input{flex:1}
+.wzplayers{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.wzchip{border:1px solid rgba(0,255,160,.4);border-radius:16px;padding:3px 10px;font-size:14px;color:#eafff2;display:flex;align-items:center;gap:6px}
+.wzchip button{background:none;border:none;color:#ff8080;cursor:pointer;font-size:15px;line-height:1}
 </style>
 </head>
 <body>
