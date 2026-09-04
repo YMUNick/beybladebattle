@@ -233,3 +233,61 @@ test('round robin: bye win is excluded from winPct denominator', () => {
   assert.ok(loser, 'expected a player with a bye and no real win');
   assert.equal(loser.winPct, 0);
 });
+
+test('single elim bracket: 2 players -> only a center final, empty sides', () => {
+  const se = BBEngines.get('single_elim');
+  const b = se.bracket(se.init(ps(2), { seed: 'input' }));
+  assert.equal(b.left.length, 0);
+  assert.equal(b.right.length, 0);
+  assert.ok(b.final && b.final.p1 && b.final.p2);
+});
+
+test('single elim bracket: 4 players -> one left, one right column, a final', () => {
+  const se = BBEngines.get('single_elim');
+  const b = se.bracket(se.init(ps(4), { seed: 'input' }));
+  assert.equal(b.left.length, 1);
+  assert.equal(b.left[0].length, 1);
+  assert.equal(b.right.length, 1);
+  assert.equal(b.right[0].length, 1);
+  assert.ok(b.final);
+});
+
+test('single elim bracket: 8 players -> two columns per side, sizes 2 then 1', () => {
+  const se = BBEngines.get('single_elim');
+  const b = se.bracket(se.init(ps(8), { seed: 'input' }));
+  assert.equal(b.left.length, 2);
+  assert.equal(b.left[0].length, 2);
+  assert.equal(b.left[1].length, 1);
+  assert.equal(b.right.length, 2);
+  assert.equal(b.right[0].length, 2);
+  assert.equal(b.right[1].length, 1);
+  assert.ok(b.final);
+});
+
+test('setScore sets and clears a match score without touching the winner', () => {
+  const rr = BBEngines.get('round_robin');
+  const players = ps(4);
+  let st = rr.init(players, {});
+  const m = st.rounds[0].matches.find(x => !x.bye);
+  st = rr.recordResult(st, players, m.id, m.p1);
+  BBEngines.setScore(st, m.id, [3, 1]);
+  const after = st.rounds.flatMap(r => r.matches).find(x => x.id === m.id);
+  assert.deepEqual(after.score, [3, 1]);
+  assert.equal(after.winner, m.p1); // unchanged
+  BBEngines.setScore(st, m.id, null);
+  assert.equal(after.score, null);
+  assert.equal(after.winner, m.p1);
+});
+
+test('single elim: changing a decided semifinal winner updates the final matchup', () => {
+  const se = BBEngines.get('single_elim');
+  const players = ps(4);
+  let st = se.init(players, { seed: 'input' });
+  const sf1 = st.rounds[0].matches[0], sf2 = st.rounds[0].matches[1];
+  st = se.recordResult(st, players, sf1.id, sf1.p1);
+  st = se.recordResult(st, players, sf2.id, sf2.p1);
+  const finalP1Before = st.rounds[1].matches[0].p1;
+  st = se.recordResult(st, players, sf1.id, sf1.p2); // change sf1 winner
+  assert.equal(st.rounds[1].matches[0].p1, sf1.p2);
+  assert.notEqual(st.rounds[1].matches[0].p1, finalP1Before);
+});

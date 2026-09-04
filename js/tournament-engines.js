@@ -260,12 +260,26 @@
     });
     return rows;
   }
+  // Converging bracket columns for rendering: left/right are round-columns ordered
+  // outer->inner (R1, R2, ...); final is the single center match.
+  function seBracket(state) {
+    var rs = state.rounds, R = rs.length;
+    if (R === 0) return { left: [], final: null, right: [] };
+    var left = [], right = [];
+    for (var r = 0; r < R - 1; r++) {
+      var ms = rs[r].matches, half = ms.length / 2;
+      left.push(ms.slice(0, half));
+      right.push(ms.slice(half));
+    }
+    return { left: left, final: rs[R - 1].matches[0] || null, right: right };
+  }
   var singleElim = {
     init: seInit, recordResult: seRecord, undoResult: seUndo,
     standings: seStandings,
     isComplete: function (s) { return s.completed; },
     champion: function (s) { return s.champion; },
-    view: function (s) { return { type: 'bracket', rounds: s.rounds }; }
+    view: function (s) { return { type: 'bracket', rounds: s.rounds }; },
+    bracket: seBracket
   };
 
   // ---------- Swiss ----------
@@ -349,10 +363,17 @@
     view: function (s) { return { type: 'rounds', rounds: s.rounds }; }
   };
 
+  function setScore(state, matchId, score) {
+    var m = findMatch(state, matchId);
+    if (m) m.score = score || null;
+    return state;
+  }
+
   var BBEngines = {
     round_robin: roundRobin,
     single_elim: singleElim,
     swiss: swiss,
+    setScore: setScore,
     _util: util,
     get: function (fmt) { return this[fmt]; }
   };
