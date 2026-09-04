@@ -212,11 +212,11 @@
   function renderBracket(t) {
     var b = BBEngines.get('single_elim').bracket(t.state);
     var champId = BBEngines.get('single_elim').champion(t.state);
-    var html = '<div class="bracket">';
+    var html = '<div class="bracket-scroll"><div class="bracket">';
     b.left.forEach(function (rm) { html += bracketColHtml(t, rm, 'l', champId); });
     html += bracketColHtml(t, b.final ? [b.final] : [], 'final', champId);
     b.right.slice().reverse().forEach(function (rm) { html += bracketColHtml(t, rm, 'r', champId); });
-    html += '</div>';
+    html += '</div></div>';
     var box = document.getElementById('tMatches');
     box.innerHTML = html;
     wireMatchControls(box, t.id);

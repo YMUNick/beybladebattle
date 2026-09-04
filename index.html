@@ -479,7 +479,14 @@ body[data-screen="battle"] #fsBtn{display:none}
 .mname.pick{cursor:pointer;border-bottom:1px dotted rgba(0,255,160,.4)}
 .mname.pick:hover{color:#7dffb0}
 /* single-elim bracket */
-.bracket{display:flex;overflow-x:auto;padding:8px 4px 18px;align-items:stretch}
+/* full-bleed scroll area: breaks out of the 900px column so the bracket can use the
+   whole viewport width instead of being crammed into the centered container */
+.bracket-scroll{position:relative;left:50%;width:100vw;margin-left:-50vw;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding:8px max(14px,env(safe-area-inset-right)) 18px max(14px,env(safe-area-inset-left))}
+/* max-content + margin:auto centers the bracket when it fits and scrolls when it does
+   not — and unlike justify-content:center the first column stays reachable while scrolling */
+.bracket{display:flex;align-items:stretch;width:max-content;min-width:min-content;margin:0 auto}
 .bcol{display:flex;flex-direction:column;justify-content:space-around;min-width:132px}
 .bcol.final{justify-content:center}
 .bcell{position:relative;display:flex;flex-direction:column;gap:2px;border:1px solid rgba(0,255,160,.3);border-radius:8px;
@@ -506,6 +513,7 @@ body[data-screen="battle"] #fsBtn{display:none}
 /* responsive */
 @media (max-width:768px){
   #freebattle,#tournament{padding:0 8px 40px}
+  .bracket-scroll{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
   .bcol{min-width:112px}
 }
 @media (max-width:480px){
