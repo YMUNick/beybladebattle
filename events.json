@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22T03:40:08.523966+00:00",
+  "updated": "2026-09-23T03:41:23.306706+00:00",
   "events": [
     {
       "title": "Ready Set! 3! 2! 1! Go Go Shoot!",
@@ -10,6 +10,36 @@
       "description": "報名費 $7;瑞士制(至少 4 輪);採標準新加坡規則,允許換組(combo change)。",
       "sourceName": "beykita.sg IG",
       "sourceUrl": "https://www.instagram.com/beykita.sg/"
+    },
+    {
+      "title": "Beycoolen Beyblade Club Weekly Meetup",
+      "date": "每週四 7:30pm 起（持續舉辦中）",
+      "location": "Singapore, Kampong Glam / Arab Street",
+      "venue": "Rocks Cafe, 98 Arab Street, Level 2, Singapore 199794",
+      "organizer": "Beycoolen Beyblade Club",
+      "description": "Beycoolen Beyblade Club 每週四晚間 7:30pm 起在 Rocks Cafe 舉辦 Beyblade X 聚會與友誼賽，有獎品、適合新手與資深玩家。",
+      "sourceName": "TheSmartLocal",
+      "sourceUrl": "https://thesmartlocal.com/read/beycoolen-beyblade-club/"
+    },
+    {
+      "title": "GA Cup Beyblade Tournament（每週五）",
+      "date": "每週五 7:30pm（持續舉辦中）",
+      "location": "Singapore, Orchard / Somerset",
+      "venue": "*SCAPE, #03-06",
+      "organizer": "Game Academia",
+      "description": "由 Game Academia 主辦的非官方 Beyblade X 聯賽制賽事，採瑞士制，12 歲以上皆可參加，門票 S$10，勝者可獲官方 Beyblade 零件獎品。",
+      "sourceName": "*SCAPE Singapore",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
+    },
+    {
+      "title": "GA Cup Autumn Season Finals",
+      "date": "2026 年 10 月 3 日 2:00pm",
+      "location": "Singapore, Orchard / Somerset",
+      "venue": "*SCAPE, #03-06",
+      "organizer": "Game Academia",
+      "description": "Game Academia 每週 Beyblade 賽事的秋季賽季總決賽，結構化錦標賽形式，玩家爭奪秋季賽季冠軍，免費入場。",
+      "sourceName": "*SCAPE Singapore",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-autumn-season-finals/"
     }
   ]
 }
