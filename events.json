@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-23T03:41:23.306706+00:00",
+  "updated": "2026-09-24T03:27:20.092707+00:00",
   "events": [
     {
       "title": "Ready Set! 3! 2! 1! Go Go Shoot!",
@@ -12,34 +12,74 @@
       "sourceUrl": "https://www.instagram.com/beykita.sg/"
     },
     {
-      "title": "Beycoolen Beyblade Club Weekly Meetup",
-      "date": "每週四 7:30pm 起（持續舉辦中）",
-      "location": "Singapore, Kampong Glam / Arab Street",
-      "venue": "Rocks Cafe, 98 Arab Street, Level 2, Singapore 199794",
+      "title": "GA Cup Beyblade Tournament (每週五)",
+      "date": "每週五 19:30",
+      "location": "新加坡 Somerset / Orchard",
+      "venue": "*SCAPE, #03-06 (2 Orchard Link)",
+      "organizer": "Game Academia",
+      "description": "由 Game Academia 主辦的每週非官方 Beyblade X 聯賽（Swiss 賽制），12 歲以上皆可參加，票價 $10,勝者可獲官方 Beyblade 零件獎品。",
+      "sourceName": "*SCAPE Singapore 官網",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
+    },
+    {
+      "title": "Beycoolen Beyblade Club 每週陀螺聚會/比賽",
+      "date": "每週(常態舉辦)",
+      "location": "新加坡 Arab Street / Kampong Glam",
+      "venue": "Rocks Cafe (98 Arab Street)",
       "organizer": "Beycoolen Beyblade Club",
-      "description": "Beycoolen Beyblade Club 每週四晚間 7:30pm 起在 Rocks Cafe 舉辦 Beyblade X 聚會與友誼賽，有獎品、適合新手與資深玩家。",
+      "description": "Beycoolen Beyblade Club 於 Rocks Cafe 定期舉辦 Beyblade 賽事,設有獎品,適合新手與資深玩家。",
       "sourceName": "TheSmartLocal",
       "sourceUrl": "https://thesmartlocal.com/read/beycoolen-beyblade-club/"
     },
     {
-      "title": "GA Cup Beyblade Tournament（每週五）",
-      "date": "每週五 7:30pm（持續舉辦中）",
-      "location": "Singapore, Orchard / Somerset",
-      "venue": "*SCAPE, #03-06",
+      "title": "GA CUP AUTUMN SEASON FINALS",
+      "date": "2026 年 10 月 3 日 14:00",
+      "location": "新加坡 Somerset / Orchard",
+      "venue": "*SCAPE #03-07",
       "organizer": "Game Academia",
-      "description": "由 Game Academia 主辦的非官方 Beyblade X 聯賽制賽事，採瑞士制，12 歲以上皆可參加，門票 S$10，勝者可獲官方 Beyblade 零件獎品。",
-      "sourceName": "*SCAPE Singapore",
-      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-beyblade/"
+      "description": "Game Academia 每週 Beyblade 社群賽事的秋季賽季總決賽,免費入場,爭奪秋季賽季冠軍。",
+      "sourceName": "*SCAPE Singapore 官網",
+      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-autumn-season-finals/"
     },
     {
-      "title": "GA Cup Autumn Season Finals",
-      "date": "2026 年 10 月 3 日 2:00pm",
-      "location": "Singapore, Orchard / Somerset",
-      "venue": "*SCAPE, #03-06",
-      "organizer": "Game Academia",
-      "description": "Game Academia 每週 Beyblade 賽事的秋季賽季總決賽，結構化錦標賽形式，玩家爭奪秋季賽季冠軍，免費入場。",
-      "sourceName": "*SCAPE Singapore",
-      "sourceUrl": "https://www.scape.sg/whats-on/ga-cup-autumn-season-finals/"
+      "title": "TCG Challenger Series - Beyblade X Tournament",
+      "date": "2025 年 11 月 1 日 10:00–14:30",
+      "location": "新加坡 Marina Centre",
+      "venue": "Suntec Singapore Convention & Exhibition Centre",
+      "organizer": "C2E4 / Sentinel Games",
+      "description": "TCG Challenger Series 與 Sentinel Games 合辦的 Beyblade X 賽事。",
+      "sourceName": "Eventbrite",
+      "sourceUrl": "https://www.eventbrite.sg/e/tcg-challenger-series-beyblade-x-tournament-tickets-1791404532179"
+    },
+    {
+      "title": "Understanding Beyblade X – Mini Tournament and Workshop",
+      "date": "2026 年 1 月 10 日 14:00–15:30",
+      "location": "新加坡 Central Library",
+      "venue": "National Library Board – Central Library",
+      "organizer": "National Library Board (NLB)",
+      "description": "學習 Beyblade X 基礎知識(零件、擂台與策略)並參加迷你賽事的工作坊活動,每位參加者需登記一張票。",
+      "sourceName": "NLB GoLibrary",
+      "sourceUrl": "https://nlb.libcal.com/event/5860924"
+    },
+    {
+      "title": "BEYBLADE X G1 SEA CUP 2026 (Marina Square)",
+      "date": "2026 年 7 月 12 日",
+      "location": "新加坡 Marina Centre",
+      "venue": "Marina Square Level 2 Foyer",
+      "organizer": "Takara Tomy / Beyblade X SEA Cup",
+      "description": "東南亞區 Beyblade X G1 SEA Cup 賽事,設有獎品與特別贈品(該場活動網頁已標示為已結束/ENDED)。",
+      "sourceName": "Marina Square 官網",
+      "sourceUrl": "https://www.marinasquare.com.sg/articles/article-xe7rsg3g?categories=Events-Web"
+    },
+    {
+      "title": "Beyblade Night @ Rocks Cafe",
+      "date": "2025 年 12 月 18 日",
+      "location": "新加坡 Arab Street / Kampong Glam",
+      "venue": "Rocks Cafe (98 Arab Street)",
+      "organizer": "Beycoolen Beyblade Club",
+      "description": "Rocks Cafe 舉辦的 Beyblade 之夜聚會/賽事(來源為 Instagram 貼文)。",
+      "sourceName": "Instagram 貼文",
+      "sourceUrl": "https://www.instagram.com/p/DSfQ7LSD_as/"
     }
   ]
 }
