@@ -505,6 +505,18 @@ body[data-screen="battle"] #fsBtn{display:none}
 /* score editor modal */
 #scoreEditor{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
 #scoreEditor.show{display:flex}
+/* 直播分享 */
+#liveModal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
+#liveModal.show{display:flex}
+#lvQr{background:#fff;padding:12px;border-radius:10px;width:244px;height:244px;margin:12px auto}
+#lvQr img,#lvQr canvas{display:block;width:220px;height:220px}
+#lvUrl{width:100%;margin:4px 0 8px;padding:8px;border-radius:6px;border:1px solid var(--neon-dim);background:#000;color:var(--white);font-size:12px}
+#tShareBtn.on{border-color:var(--danger);color:var(--danger)}
+.livestatus{display:none;text-align:center;font-size:13px;color:#9adf9f;margin:-4px 0 10px}
+body.liveview .livestatus{display:block}
+.livestatus.on{color:var(--danger)}
+body.liveview #tBackBtn,body.liveview #tRematchBtn,body.liveview #tShareBtn,body.liveview .miconbtn,body.liveview .btools{display:none}
+body.liveview .pick{cursor:default;border-bottom:none;pointer-events:none}
 .scorerow{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:14px 0}
 .scol{display:flex;flex-direction:column;align-items:center;gap:4px}
 .scol .snm{color:#9adf9f;font-size:13px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -780,8 +792,10 @@ body[data-screen="battle"] #fsBtn{display:none}
   <div class="subbtns" style="margin-bottom:12px">
     <button class="ghostbtn" id="tBackBtn">↩ 賽事列表</button>
     <button class="ghostbtn" id="tRematchBtn">♻ 重賽一次</button>
+    <button class="ghostbtn" id="tShareBtn">📡 直播分享</button>
     <span id="tMeta" class="thint"></span>
   </div>
+  <div id="tLiveStatus" class="livestatus"></div>
   <div id="tChampion"></div>
   <h3 class="rules-cat" id="tStandingsHead">積分榜</h3>
   <div id="tStandings"></div>
@@ -820,6 +834,20 @@ body[data-screen="battle"] #fsBtn{display:none}
       <button class="cok" id="seOk">確定</button>
       <button class="ccancel" id="seClear">清除</button>
       <button class="ccancel" id="seCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 自由對戰:直播分享 ================= -->
+<div id="liveModal">
+  <div class="cwin">
+    <div class="cmsg">掃描 QR Code 即時觀看對戰與排名</div>
+    <div id="lvQr"></div>
+    <input id="lvUrl" readonly onclick="this.select()">
+    <div class="cbtns">
+      <button class="cok" id="lvCopy">複製連結</button>
+      <button class="ccancel" id="lvStop">停止直播</button>
+      <button class="ccancel" id="lvClose">關閉</button>
     </div>
   </div>
 </div>
@@ -1516,5 +1544,8 @@ document.getElementById('rulesHomeBtn').addEventListener('click',()=>showScreen(
 </script>
 <script src="js/tournament-engines.js"></script>
 <script src="js/free-battle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="js/live-config.js"></script>
+<script src="js/live-share.js"></script>
 </body>
 </html>

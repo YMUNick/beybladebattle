@@ -17,8 +17,13 @@
     for (var k = 0; k < list.length; k++) if (list[k].id === t.id) { i = k; break; }
     if (i >= 0) list[i] = t; else list.unshift(t);
     save(list);
+    if (t.shareId && window.BBLive) BBLive.publish(t);
   }
-  function remove(id) { save(load().filter(function (t) { return t.id !== id; })); }
+  function remove(id) {
+    var t = getById(id);
+    if (t && t.shareId && window.BBLive) BBLive.unpublish(t.shareId);
+    save(load().filter(function (t) { return t.id !== id; }));
+  }
 
   var FORMAT_LABELS = { round_robin: '循環賽', single_elim: '單淘汰', swiss: '瑞士制' };
 
@@ -72,7 +77,9 @@
   function rematch(id) {
     var t = getById(id); if (!t) return;
     if (t.participants.length < 2) { if (window.toast) toast('人數不足,無法重賽'); return; }
-    var participants = t.participants.map(function (p) { return { id: p.id, name: p.name }; });
+    // 重賽時打亂選手順序,讓配對 / 種子位置重新洗牌
+    var participants = BBEngines._util.shuffle(
+      t.participants.map(function (p) { return { id: p.id, name: p.name }; }));
     var eng = BBEngines.get(t.format);
     var state = eng.init(participants, (t.state && t.state.options) || {});
     var base = t.name.replace(/\s*\(重賽\)\s*$/, '');
@@ -81,6 +88,8 @@
       name: base + ' (重賽)', format: t.format,
       createdAt: Date.now(), participants: participants, state: state
     };
+    // 直播中的話,觀眾連結直接跟到新的一場
+    if (t.shareId) { nt.shareId = t.shareId; delete t.shareId; upsert(t); }
     upsert(nt);
     openTournament(nt.id);
     if (window.toast) toast('已用相同名單開新一場');
@@ -124,6 +133,7 @@
       nameCell(m.p2, m.winner === m.p2, true) + '</div>';
   }
   function wireMatchControls(box, id) {
+    if (readOnly) return;
     box.querySelectorAll('[data-pick]').forEach(function (el) {
       el.addEventListener('click', function () {
         var parts = el.getAttribute('data-pick').split('|');
@@ -224,6 +234,18 @@
   function renderDetail(id) {
     var t = getById(id);
     if (!t) { showScreen('freebattle'); return; }
+    renderTournament(t);
+    refreshShareBtn(t);
+  }
+  // 觀眾端唯讀渲染(直播);點選 / 編輯控制由 body.liveview 的 CSS 隱藏且不綁定事件
+  var readOnly = false;
+  function renderView(t) { readOnly = true; renderTournament(t); }
+  function refreshShareBtn(t) {
+    var b = document.getElementById('tShareBtn');
+    b.textContent = t && t.shareId ? '📡 直播中' : '📡 直播分享';
+    b.classList.toggle('on', !!(t && t.shareId));
+  }
+  function renderTournament(t) {
     document.getElementById('tName').textContent = t.name;
     document.getElementById('tMeta').textContent = FORMAT_LABELS[t.format] + '・' + t.participants.length + ' 人・' + progressText(t);
     var isSE = t.format === 'single_elim';
@@ -255,6 +277,10 @@
   document.getElementById('fbHomeBtn').addEventListener('click', function () { showScreen('setup'); });
   document.getElementById('tBackBtn').addEventListener('click', function () { renderList(); showScreen('freebattle'); });
   document.getElementById('tRematchBtn').addEventListener('click', function () { if (openId) rematch(openId); });
+  document.getElementById('tShareBtn').addEventListener('click', function () {
+    if (!openId) return;
+    if (window.BBLive) BBLive.openShare(openId); else if (window.toast) toast('直播模組未載入');
+  });
 
   // ---------- new tournament wizard ----------
   var FORMAT_DEFS = [
@@ -376,6 +402,7 @@
   window.FreeBattle = {
     load: load, save: save, getById: getById, upsert: upsert, remove: remove,
     renderList: renderList, openTournament: openTournament,
+    renderView: renderView, refreshShareBtn: refreshShareBtn,
     FORMAT_LABELS: FORMAT_LABELS, esc: esc
   };
 })();

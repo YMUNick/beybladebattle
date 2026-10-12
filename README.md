@@ -44,6 +44,20 @@
 
 ---
 
+## 自由對戰・直播分享
+在賽事頁按 **「📡 直播分享」** 會產生 QR Code 與連結，其他人掃描後可即時看到目前的對戰與積分榜（唯讀，主辦端每次更新都會自動同步）。按「重賽一次」時直播連結會自動跟到新的一場；「停止直播」會刪除雲端資料。
+
+此功能使用 Firebase Realtime Database（免費 Spark 方案即可），首次使用需設定一次：
+
+1. 到 [Firebase Console](https://console.firebase.google.com/) 建立專案。
+2. **Build → Authentication → 開始使用 → Sign-in method**，啟用 **「匿名」**。
+3. **Build → Realtime Database → 建立資料庫**（地區建議 `asia-southeast1`，以「鎖定模式」建立）。
+4. 在 Realtime Database 的 **「規則」** 分頁貼上本 repo 的 [`database.rules.json`](database.rules.json) 內容並發布。
+5. **專案設定 → 一般 → 新增網頁應用程式**，取得 `apiKey`；資料庫網址在 Realtime Database 頁面上方。
+6. 填入 [`js/live-config.js`](js/live-config.js) 後 commit / push 即可。
+
+> `apiKey` 是公開識別碼，放在前端是正常的；資料安全由規則控管：任何人可讀取，但只有建立該場直播的裝置能修改或刪除。
+
 ## 全螢幕 / 安裝
 - 網頁底部中央有 **全螢幕按鈕**（Android Chrome、電腦、iPad 直接可用）。
 - **iPhone Safari**：Safari 不支援網頁全螢幕 API，請用 **分享 → 加入主畫面**，之後從主畫面圖示開啟即為全螢幕（已內建 PWA 設定與圖示）。

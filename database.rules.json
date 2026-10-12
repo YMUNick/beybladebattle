@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "live": {
+      "$shareId": {
+        ".read": true,
+        ".write": "auth != null && (!data.exists() || data.child('owner').val() === auth.uid)",
+        ".validate": "newData.child('owner').val() === auth.uid && newData.child('data').isString() && newData.child('data').val().length < 500000"
+      }
+    }
+  }
+}
