@@ -610,6 +610,34 @@ body[data-screen="battle"] #fsBtn{display:none}
 .bkm.final .bkn{font-size:16px}
 .bkm.crowned .bkp.win::before{background:#ffd84a;box-shadow:0 0 8px #ffd84a}
 .bkm.crowned .bkp.win .bks{background:linear-gradient(135deg,#ffe98a,#e0a400);color:#2a1d00}
+/* final on fire until a champion is picked: spinning flame ring + glow + flickering tongues */
+@property --fa{syntax:'<angle>';inherits:false;initial-value:0deg}
+.bkslot:has(>.bkfire){padding-top:34px;padding-bottom:34px}
+.bkfire{position:relative;isolation:isolate;border-radius:12px}
+.bkfire::before,.bkfire::after{content:'';position:absolute;z-index:0;border-radius:13px;
+  background:conic-gradient(from var(--fa),#ff3d00,#ff9100,#ffd600,#ff6d00,#ff1744,#ff9100,#ffd600,#ff3d00);
+  animation:bkspin 2.4s linear infinite}
+.bkfire::before{inset:-3px}
+.bkfire::after{inset:-7px;filter:blur(12px);opacity:.85;animation:bkspin 2.4s linear infinite,bkflick 1.1s ease-in-out infinite alternate}
+.bkfire .bkm.final{border-color:transparent;background:linear-gradient(180deg,#1c0e05,#0b0603);
+  box-shadow:inset 0 0 18px rgba(255,90,0,.25)}
+.bkfire .bkm.final .bkp+.bkp{border-top-color:rgba(255,140,0,.2)}
+.bkfire .bkm.final .bks{background:rgba(255,80,0,.12);color:#ffb070}
+.bkflames{position:absolute;z-index:0;left:2px;right:2px;bottom:calc(100% - 8px);height:36px;pointer-events:none;
+  display:flex;justify-content:space-between;align-items:flex-end}
+.bkflames i{width:20px;height:32px;border-radius:50% 50% 35% 35%/65% 65% 35% 35%;transform-origin:50% 100%;
+  background:radial-gradient(ellipse at 50% 85%,#fff6c2 0%,#ffcc00 22%,#ff6d00 52%,rgba(255,40,0,0) 72%);
+  filter:blur(1.2px);mix-blend-mode:screen;
+  animation:bkflame calc(.55s + var(--i) * .06s) ease-in-out infinite alternate;animation-delay:calc(var(--i) * -.17s)}
+.bkflames i:nth-child(even){width:15px;height:24px}
+.bkflames i:nth-child(3n){height:38px}
+@keyframes bkspin{to{--fa:360deg}}
+@keyframes bkflick{from{opacity:.6;transform:scale(.98)}to{opacity:1;transform:scale(1.03)}}
+@keyframes bkflame{
+  0%{transform:translateY(3px) scale(1.05,.7) skewX(3deg);opacity:.7}
+  50%{transform:translateY(0) scale(.92,1.12) skewX(-4deg);opacity:1}
+  100%{transform:translateY(-4px) scale(.85,1.25) skewX(5deg);opacity:.85}}
+@media (prefers-reduced-motion:reduce){.bkfire::before,.bkfire::after,.bkflames i{animation:none}}
 .bkcrown svg{width:15px;height:15px;margin-right:5px;vertical-align:-2px;fill:none;stroke:#ffd84a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .bkhint{display:none;margin:0 0 6px;text-align:center;font-size:12px;letter-spacing:.15em;color:#6f9a77}
 #tMatches.bk-overflow .bkhint{display:block}

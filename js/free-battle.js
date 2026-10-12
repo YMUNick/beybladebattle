@@ -255,8 +255,15 @@
         '<button type="button" class="bktool" data-undo="' + m.id + '" aria-label="清除">' + ICON_UNDO + '</button></div>'
       : '';
     var live = !decided && m.p1 != null && m.p2 != null ? ' ready' : '';
-    return '<div class="bkm' + (decided ? ' done' : '') + live + (isFinal ? ' final' : '') +
+    var box = '<div class="bkm' + (decided ? ' done' : '') + live + (isFinal ? ' final' : '') +
       (isFinal && champId ? ' crowned' : '') + '">' + row(m.p1, 0) + row(m.p2, 1) + tools + '</div>';
+    // 決賽還沒填比分:火焰邊框(填了比分才熄,換成金色冠軍框)
+    if (isFinal && !m.score) {
+      var flames = '';
+      for (var f = 0; f < 9; f++) flames += '<i style="--i:' + f + '"></i>';
+      return '<div class="bkfire"><div class="bkflames" aria-hidden="true">' + flames + '</div>' + box + '</div>';
+    }
+    return box;
   }
   // a round column; matches are grouped in feeder pairs so the CSS can draw the ⊐ joins
   function bkColHtml(t, label, matches, opts, champId) {
