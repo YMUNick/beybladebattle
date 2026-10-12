@@ -98,7 +98,7 @@
       var x = FreeBattle.getById(t.id);
       if (!x || x.shareId !== t.shareId) return;
       unpublish(x.shareId);
-      delete x.shareId; delete x.shareCreatedAt;
+      delete x.shareId; delete x.shareCreatedAt; delete x.videoId; delete x.videoExp;
       FreeBattle.upsert(x);
       FreeBattle.refreshShareBtn(x);
       if (window.toast) toast('直播已超過 2 天,已自動結束');
@@ -114,11 +114,12 @@
 
   // ---------- 主辦端:分享彈窗 ----------
   var modalTid = null;
-  function openShare(tid) {
-    if (!configured()) { if (window.toast) toast('尚未設定直播分享(js/live-config.js),步驟見 README'); return; }
-    var t = FreeBattle.getById(tid); if (!t) return;
+  // 確保賽事已開啟直播分享(過期就換新連結),回傳最新的賽事物件
+  function ensureShare(tid) {
+    var t = FreeBattle.getById(tid); if (!t) return null;
     if (t.shareId && isExpired(t)) { // 過期就開一個新的直播連結
       unpublish(t.shareId); delete t.shareId; delete t.shareCreatedAt;
+      delete t.videoId; delete t.videoExp; // 觀眾視訊連結帶著舊的 shareId,一併作廢
       if (window.toast) toast('舊的直播已超過 2 天,已產生新的連結');
     }
     if (!t.shareId) {
@@ -126,6 +127,11 @@
       creating[t.shareId] = true;
       FreeBattle.upsert(t); // upsert 會觸發 publish
     } else publish(t);
+    return t;
+  }
+  function openShare(tid) {
+    if (!configured()) { if (window.toast) toast('尚未設定直播分享(js/live-config.js),步驟見 README'); return; }
+    var t = ensureShare(tid); if (!t) return;
     modalTid = tid;
     var url = viewerUrl(t.shareId);
     document.getElementById('lvUrl').value = url;
@@ -138,17 +144,20 @@
     FreeBattle.refreshShareBtn(t);
   }
   function closeShare() { document.getElementById('liveModal').classList.remove('show'); modalTid = null; }
-  function copyUrl() {
-    var inp = document.getElementById('lvUrl'), url = inp.value;
+  function copyText(inp) {
     var done = function () { if (window.toast) toast('已複製連結'); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { inp.select(); document.execCommand('copy'); done(); });
-    else { inp.select(); document.execCommand('copy'); done(); }
+    var legacy = function () { inp.select(); document.execCommand('copy'); done(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(inp.value).then(done, legacy);
+    else legacy();
   }
+  function copyUrl() { copyText(document.getElementById('lvUrl')); }
   function stopShare() {
     var t = modalTid && FreeBattle.getById(modalTid);
     if (t && t.shareId) {
       unpublish(t.shareId);
-      delete t.shareId; delete t.shareCreatedAt; FreeBattle.upsert(t);
+      delete t.shareId; delete t.shareCreatedAt;
+      delete t.videoId; delete t.videoExp; // 視訊觀眾連結帶著 shareId,一併作廢
+      FreeBattle.upsert(t);
       FreeBattle.refreshShareBtn(t);
       if (window.toast) toast('已停止直播');
     }
@@ -223,7 +232,11 @@
   document.getElementById('lvClose').addEventListener('click', closeShare);
   document.getElementById('liveModal').addEventListener('click', function (e) { if (e.target.id === 'liveModal') closeShare(); });
 
-  window.BBLive = { configured: configured, publish: publish, unpublish: unpublish, openShare: openShare };
+  window.BBLive = {
+    configured: configured, publish: publish, unpublish: unpublish, openShare: openShare,
+    // 視訊直播(video-live.js)共用
+    ensureShare: ensureShare, getAuth: getAuth, newId: newShareId, fmtTime: fmtTime, dbBase: dbBase, copyText: copyText
+  };
 
   var liveId = new URLSearchParams(location.search).get('live');
   if (liveId) startViewer(liveId);

@@ -6,6 +6,25 @@
         ".write": "auth != null && (!data.exists() || (data.child('owner').val() === auth.uid && (!newData.exists() || data.child('createdAt').val() + 172800000 > now)) || (!newData.exists() && data.child('createdAt').val() + 172800000 <= now))",
         ".validate": "newData.child('owner').val() === auth.uid && newData.child('data').isString() && newData.child('data').val().length < 500000 && newData.child('createdAt').val() === (data.exists() ? data.child('createdAt').val() : now)"
       }
+    },
+    "video": {
+      "$videoId": {
+        ".read": "data.child('createdAt').val() + 7200000 > now",
+        ".write": "auth != null && (!data.exists() || (data.child('owner').val() === auth.uid && (!newData.exists() || data.child('createdAt').val() + 7200000 > now)) || (!newData.exists() && data.child('createdAt').val() + 7200000 <= now))",
+        ".validate": "newData.child('owner').isString() && newData.child('owner').val() === (data.exists() ? data.child('owner').val() : auth.uid) && newData.child('createdAt').val() === (data.exists() ? data.child('createdAt').val() : now)",
+        "owner": { ".validate": true },
+        "createdAt": { ".validate": true },
+        "peers": {
+          "$uid": {
+            ".write": "auth != null && root.child('video').child($videoId).child('createdAt').val() + 7200000 > now && (auth.uid === $uid || auth.uid === root.child('video').child($videoId).child('owner').val())",
+            "offer": { ".validate": "newData.isString() && newData.val().length < 20000" },
+            "answer": { ".validate": "newData.isString() && newData.val().length < 20000" },
+            "full": { ".validate": "newData.val() === true" },
+            "$other": { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
     }
   }
 }

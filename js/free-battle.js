@@ -91,7 +91,8 @@
     // 直播中的話,觀眾連結直接跟到新的一場
     if (t.shareId) {
       nt.shareId = t.shareId; nt.shareCreatedAt = t.shareCreatedAt; // 有效期限從第一次分享起算,重賽不重置
-      delete t.shareId; delete t.shareCreatedAt; upsert(t);
+      if (t.videoId) { nt.videoId = t.videoId; nt.videoExp = t.videoExp; } // 視訊直播也跟過去
+      delete t.shareId; delete t.shareCreatedAt; delete t.videoId; delete t.videoExp; upsert(t);
     }
     upsert(nt);
     openTournament(nt.id);
@@ -322,6 +323,9 @@
     var b = document.getElementById('tShareBtn');
     b.textContent = t && t.shareId ? '📡 直播中' : '📡 直播分享';
     b.classList.toggle('on', !!(t && t.shareId));
+    var v = document.getElementById('tVideoBtn'), von = !!(t && t.videoId && t.videoExp > Date.now());
+    v.textContent = von ? '🎥 視訊直播中' : '🎥 視訊直播';
+    v.classList.toggle('on', von);
   }
   function renderTournament(t) {
     document.getElementById('tName').textContent = t.name;
@@ -365,6 +369,10 @@
   document.getElementById('tShareBtn').addEventListener('click', function () {
     if (!openId) return;
     if (window.BBLive) BBLive.openShare(openId); else if (window.toast) toast('直播模組未載入');
+  });
+  document.getElementById('tVideoBtn').addEventListener('click', function () {
+    if (!openId) return;
+    if (window.BBVideo) BBVideo.openHost(openId); else if (window.toast) toast('視訊直播模組未載入');
   });
 
   // ---------- new tournament wizard ----------
