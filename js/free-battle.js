@@ -97,28 +97,34 @@
   var ICON_EDIT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
   var ICON_UNDO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>';
   var ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  var ICON_TROPHY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
   function renderStandings(t) {
     var eng = BBEngines.get(t.format);
     var rows = eng.standings(t.state, t.participants);
     var champ = eng.champion(t.state, t.participants);
     var bh = rows.length && rows[0].buchholz !== undefined; // 瑞士制才有對手分
-    var html = '<div class="stwrap"><table class="sttable"><thead><tr>' +
-      '<th class="strk">#</th><th class="stname">選手</th><th>勝-敗</th>' +
-      (bh ? '<th title="所有對手的勝場加總">對手分</th>' : '') + '<th>勝率</th><th>積分差</th></tr></thead><tbody>';
-    rows.forEach(function (r) {
+    var html = '<ol class="lb">' + rows.map(function (r) {
       var real = (r.wins - (r.byes || 0)) + r.losses;
-      var rk = r.rank <= 3 ? ' r' + r.rank : '';
-      var diffCls = r.diff > 0 ? 'pos' : r.diff < 0 ? 'neg' : '';
-      html += '<tr class="' + (r.playerId === champ ? 'champrow' : '') + '">' +
-        '<td class="strk"><span class="rk' + rk + '">' + r.rank + '</span></td>' +
-        '<td class="stname">' + esc(r.name) + (r.playerId === champ ? ' <span class="sttag">冠軍</span>' : '') + '</td>' +
-        '<td class="stwl"><b>' + r.wins + '</b><i>-</i><span>' + r.losses + '</span></td>' +
-        (bh ? '<td class="stnum">' + r.buchholz + '</td>' : '') +
-        // 只有輪空、尚無實際對戰時勝率顯示「—」,避免出現「1-0 / 0%」
-        '<td class="stnum">' + (real ? Math.round(r.winPct * 100) + '%' : '—') + '</td>' +
-        '<td class="stnum ' + diffCls + '">' + (r.diff > 0 ? '+' : '') + r.diff + '</td></tr>';
-    });
-    html += '</tbody></table></div>';
+      var pct = real ? Math.round(r.winPct * 100) : null;
+      var diff = (r.diff > 0 ? '+' : '') + r.diff;
+      var cls = 'lbrow' + (r.rank <= 3 ? ' r' + r.rank : '') + (r.playerId === champ ? ' champ' : '');
+      function stat(label, val, extra) {
+        return '<span class="lbstat' + (extra || '') + '"><em>' + label + '</em>' + val + '</span>';
+      }
+      return '<li class="' + cls + '">' +
+        '<span class="lbrank" aria-label="第 ' + r.rank + ' 名">' + r.rank + '</span>' +
+        '<div class="lbmain">' +
+          '<div class="lbname">' + esc(r.name) + (r.playerId === champ ? '<span class="lbcrown">' + ICON_TROPHY + '冠軍</span>' : '') + '</div>' +
+          '<div class="lbbar" aria-hidden="true"><i style="width:' + (pct || 0) + '%"></i></div>' +
+          '<div class="lbstats">' +
+            (bh ? stat('對手分', r.buchholz) : '') +
+            stat('勝率', pct == null ? '—' : pct + '%') +
+            stat('積分差', diff, r.diff > 0 ? ' pos' : r.diff < 0 ? ' neg' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="lbwl" aria-label="' + r.wins + ' 勝 ' + r.losses + ' 敗"><b>' + r.wins + '</b><i>-</i><span>' + r.losses + '</span></div>' +
+      '</li>';
+    }).join('') + '</ol>';
     document.getElementById('tStandings').innerHTML = html;
   }
   function matchRowHtml(t, m) {
@@ -150,10 +156,14 @@
   function wireMatchControls(box, id) {
     if (readOnly) return;
     box.querySelectorAll('[data-pick]').forEach(function (el) {
-      el.addEventListener('click', function () {
+      var pick = function () {
         var parts = el.getAttribute('data-pick').split('|');
         record(id, parts[0], parts[1]);
-      });
+      };
+      el.addEventListener('click', pick);
+      if (el.getAttribute('role') === 'button') {
+        el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      }
     });
     box.querySelectorAll('[data-undo]').forEach(function (b) {
       b.addEventListener('click', function () { undo(id, b.getAttribute('data-undo')); });
@@ -218,44 +228,77 @@
       box.innerHTML = '<div class="champbanner">🏆 冠軍:' + esc(nameOf(t, eng.champion(t.state, t.participants))) + '</div>';
     } else box.innerHTML = '';
   }
-  function bracketCellHtml(t, m, side, champId) {
-    if (!m) return '<div class="bcell ' + side + '"><div class="bp dim"><span class="bpn">—</span></div></div>';
+  function roundLabel(r, R) {
+    var k = R - 1 - r;
+    return k === 0 ? '決賽' : k === 1 ? '準決賽' : k === 2 ? '八強' : k === 3 ? '十六強' : '第 ' + (r + 1) + ' 輪';
+  }
+  // one match box: two player rows (name + score slab); winner row lit, loser dimmed
+  function bkMatchHtml(t, m, isFinal, champId) {
     if (m.bye) {
-      return '<div class="bcell ' + side + '">' +
-        '<div class="bp win"><span class="bpn">' + esc(nameOf(t, m.p1)) + '</span></div>' +
-        '<div class="bp dim"><span class="bpn">輪空</span></div></div>';
+      // 輪空的選手可能在 p1 或 p2(依種子位置),用 winner 取名字
+      return '<div class="bkm bye"><div class="bkp win"><span class="bkn">' + esc(nameOf(t, m.winner)) + '</span><span class="bks"></span></div>' +
+        '<div class="bkp tbd"><span class="bkn">輪空</span><span class="bks"></span></div></div>';
     }
     var decided = m.winner != null;
-    function bp(pid, isWin) {
-      var clickable = pid != null;
-      var sc = m.score ? (isWin ? m.score[0] : m.score[1]) : '';
-      return '<div class="bp' + (isWin ? ' win' : '') + (clickable ? ' pick' : ' dim') + '"' +
-        (clickable ? ' data-pick="' + m.id + '|' + pid + '"' : '') + '>' +
-        '<span class="bpn">' + esc(nameOf(t, pid)) + '</span><span class="bps">' + sc + '</span></div>';
+    var sc = m.score ? (m.winner === m.p1 ? m.score : [m.score[1], m.score[0]]) : null;
+    function row(pid, i) {
+      var isWin = decided && m.winner === pid;
+      var cls = 'bkp' + (isWin ? ' win' : decided ? ' lose' : '') + (pid == null ? ' tbd' : ' pick');
+      var attr = pid != null ? ' role="button" tabindex="0" data-pick="' + m.id + '|' + pid + '" aria-label="' +
+        esc(nameOf(t, pid) + (isWin ? '(勝)' : ',點選設為勝方')) + '"' : '';
+      var crown = isWin && isFinal && pid === champId ? '<span class="bkcrown">' + ICON_TROPHY + '</span>' : '';
+      return '<div class="' + cls + '"' + attr + '><span class="bkn">' + crown + esc(pid == null ? '待定' : nameOf(t, pid)) + '</span>' +
+        '<span class="bks">' + (sc ? sc[i] : '') + '</span></div>';
     }
-    var champ = (champId && m.winner === champId && side === 'final') ? ' champ' : '';
     var tools = decided
-      ? '<div class="btools"><button class="miconbtn" data-score="' + m.id + '" title="比分">✎</button>' +
-        '<button class="miconbtn" data-undo="' + m.id + '" title="清除">↺</button></div>'
+      ? '<div class="bktools"><button type="button" class="bktool" data-score="' + m.id + '" aria-label="比分">' + ICON_EDIT + '</button>' +
+        '<button type="button" class="bktool" data-undo="' + m.id + '" aria-label="清除">' + ICON_UNDO + '</button></div>'
       : '';
-    return '<div class="bcell ' + side + champ + '">' + bp(m.p1, m.winner === m.p1) + bp(m.p2, m.winner === m.p2) + tools + '</div>';
+    var live = !decided && m.p1 != null && m.p2 != null ? ' ready' : '';
+    return '<div class="bkm' + (decided ? ' done' : '') + live + (isFinal ? ' final' : '') +
+      (isFinal && champId ? ' crowned' : '') + '">' + row(m.p1, 0) + row(m.p2, 1) + tools + '</div>';
   }
-  function bracketColHtml(t, matches, side, champId) {
-    return '<div class="bcol' + (side === 'final' ? ' final' : '') + '">' +
-      matches.map(function (m) { return bracketCellHtml(t, m, side, champId); }).join('') + '</div>';
+  // a round column; matches are grouped in feeder pairs so the CSS can draw the ⊐ joins
+  function bkColHtml(t, label, matches, opts, champId) {
+    var body = '';
+    function slot(m) {
+      var fed = m && (m.p1 != null || m.p2 != null) ? ' fed' : '';
+      return '<div class="bkslot' + (m && m.winner != null ? ' won' : '') + fed + '">' + bkMatchHtml(t, m, opts.final, champId) + '</div>';
+    }
+    if (matches.length === 1) body = slot(matches[0]);
+    else for (var i = 0; i < matches.length; i += 2) body += '<div class="bkpair">' + slot(matches[i]) + slot(matches[i + 1]) + '</div>';
+    return '<div class="bkcol' + (opts.cls ? ' ' + opts.cls : '') + '"><div class="bkh">' + label + '</div><div class="bkbody">' + body + '</div></div>';
   }
   function renderBracket(t) {
-    var b = BBEngines.get('single_elim').bracket(t.state);
-    var champId = BBEngines.get('single_elim').champion(t.state);
-    var html = '<div class="bracket-scroll"><div class="bracket">';
-    b.left.forEach(function (rm) { html += bracketColHtml(t, rm, 'l', champId); });
-    html += bracketColHtml(t, b.final ? [b.final] : [], 'final', champId);
-    b.right.slice().reverse().forEach(function (rm) { html += bracketColHtml(t, rm, 'r', champId); });
-    html += '</div></div>';
+    var eng = BBEngines.get('single_elim');
+    var champId = eng.champion(t.state);
+    var rs = t.state.rounds, R = rs.length;
+    // phones: classic left-to-right tree; wide screens: two halves converging on the final
+    var linear = rs.map(function (rd, r) {
+      return bkColHtml(t, roundLabel(r, R), rd.matches, { final: r === R - 1, cls: r === 0 ? 'first' : r === R - 1 ? 'last' : '' }, champId);
+    }).join('');
+    var b = eng.bracket(t.state), conv = '';
+    if (R > 1) {
+      b.left.forEach(function (ms, r) { conv += bkColHtml(t, roundLabel(r, R), ms, { cls: r === 0 ? 'first' : '' }, champId); });
+      conv += bkColHtml(t, '決賽', [b.final], { final: true, cls: 'center' }, champId);
+      b.right.slice().reverse().forEach(function (ms, i, arr) {
+        var r = arr.length - 1 - i;
+        conv += bkColHtml(t, roundLabel(r, R), ms, { cls: 'rev' + (r === 0 ? ' first' : '') }, champId);
+      });
+    }
+    var html = '<p class="bkhint" aria-hidden="true">← 左右滑動查看完整賽程 →</p><div class="bracket-scroll"><div class="bk bk-linear' + (R > 1 ? ' has-conv' : '') + '">' + linear + '</div>' +
+      (R > 1 ? '<div class="bk bk-conv">' + conv + '</div>' : '') + '</div>';
     var box = document.getElementById('tMatches');
     box.innerHTML = html;
+    // 畫面可能還沒顯示(先 render 再 showScreen),下一個 frame 再量寬度
+    requestAnimationFrame(updBracketHint);
     wireMatchControls(box, t.id);
   }
+  function updBracketHint() {
+    var box = document.getElementById('tMatches'), sc = box.querySelector('.bracket-scroll');
+    box.classList.toggle('bk-overflow', !!sc && sc.scrollWidth > sc.clientWidth + 4);
+  }
+  window.addEventListener('resize', updBracketHint);
   function renderDetail(id) {
     var t = getById(id);
     if (!t) { showScreen('freebattle'); return; }
