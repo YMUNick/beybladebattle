@@ -89,7 +89,10 @@
       createdAt: Date.now(), participants: participants, state: state
     };
     // 直播中的話,觀眾連結直接跟到新的一場
-    if (t.shareId) { nt.shareId = t.shareId; delete t.shareId; upsert(t); }
+    if (t.shareId) {
+      nt.shareId = t.shareId; nt.shareCreatedAt = t.shareCreatedAt; // 有效期限從第一次分享起算,重賽不重置
+      delete t.shareId; delete t.shareCreatedAt; upsert(t);
+    }
     upsert(nt);
     openTournament(nt.id);
     if (window.toast) toast('已用相同名單開新一場');
