@@ -67,7 +67,9 @@
     return yes;
   }
   // shared standings for round_robin + swiss
-  function tallyStandings(state, participants) {
+  // opts.buchholz (swiss): add 對手分 = sum of real opponents' wins, ranked right after wins.
+  function tallyStandings(state, participants, opts) {
+    opts = opts || {};
     var map = {};
     participants.forEach(function (p) {
       // `byes` is computation-only (used to exclude byes from winPct); it is not displayed.
@@ -91,6 +93,16 @@
       var played = (r.wins - r.byes) + r.losses; // real games only
       r.winPct = played ? (r.wins - r.byes) / played : 0;
     });
+    if (opts.buchholz) {
+      rows.forEach(function (r) { r.buchholz = 0; });
+      eachMatch(state, function (m) {
+        if (m.bye || m.winner == null || !map[m.p1] || !map[m.p2]) return;
+        map[m.p1].buchholz += map[m.p2].wins;
+        map[m.p2].buchholz += map[m.p1].wins;
+      });
+    }
+    // players in the same tie group (equal on every criterion ranked before head-to-head)
+    function tied(a, b) { return a.wins === b.wins && (!opts.buchholz || a.buchholz === b.buchholz); }
     // Head-to-head tiebreak = mini-league among players tied on wins (count of wins
     // against the other tied players). A pairwise comparator is not transitive: with a
     // cycle (A>B, B>C, C>A) the result depended on input order and ignored diff.
@@ -98,11 +110,11 @@
     eachMatch(state, function (m) {
       if (m.bye || m.winner == null) return;
       var w = m.winner, l = (m.p1 === w ? m.p2 : m.p1);
-      if (!map[w] || !map[l] || map[w].wins !== map[l].wins) return;
+      if (!map[w] || !map[l] || !tied(map[w], map[l])) return;
       map[w].h2h++;
     });
     rows.sort(function (a, b) {
-      return (b.wins - a.wins) || (b.h2h - a.h2h) ||
+      return (b.wins - a.wins) || (opts.buchholz ? b.buchholz - a.buchholz : 0) || (b.h2h - a.h2h) ||
              (b.diff - a.diff) || a.name.localeCompare(b.name);
     });
     rows.forEach(function (r) { delete r.h2h; });
@@ -302,45 +314,84 @@
     return state;
   }
   function swGenerate(state, participants, index) {
-    var order = tallyStandings(state, participants).map(function (r) { return r.playerId; });
-    var pool = order.slice();
+    var order = swStandings(state, participants).map(function (r) { return r.playerId; });
     var mc = countMatches(state);
-    var matches = [];
-    if (pool.length % 2 === 1) {
-      var byeId = null;
-      for (var i = pool.length - 1; i >= 0; i--) { if (!hadBye(state, pool[i])) { byeId = pool[i]; break; } }
-      if (byeId == null) byeId = pool[pool.length - 1];
-      pool = pool.filter(function (id) { return id !== byeId; });
-      matches.push({ id: 'm' + (++mc), p1: byeId, p2: null, winner: byeId, score: null, bye: true });
-    }
+    var matches = [], pairs = null, byeId = null;
     if (index === 1) {
-      var half = pool.length / 2;
-      for (var k = 0; k < half; k++) matches.push(mkMatch(++mc, pool[k], pool[k + half]));
-    } else {
-      var used = {};
-      for (var a = 0; a < pool.length; a++) {
-        if (used[pool[a]]) continue;
-        var pa = pool[a], paired = false;
-        for (var b = a + 1; b < pool.length; b++) {
-          var pb = pool[b];
-          if (used[pb]) continue;
-          if (!havePlayed(state, pa, pb)) { matches.push(mkMatch(++mc, pa, pb)); used[pa] = used[pb] = true; paired = true; break; }
-        }
-        if (!paired) {
-          for (var c = a + 1; c < pool.length; c++) {
-            var pc = pool[c];
-            if (!used[pc]) { matches.push(mkMatch(++mc, pa, pc)); used[pa] = used[pc] = true; break; }
-          }
-        }
+      var pool1 = order.slice();
+      if (pool1.length % 2 === 1) byeId = pool1.pop();
+      var half = pool1.length / 2;
+      pairs = [];
+      for (var k = 0; k < half; k++) pairs.push([pool1[k], pool1[k + half]]);
+    } else if (order.length % 2 === 1) {
+      // Bye goes to the lowest-ranked player without one yet — but only if the rest can
+      // still be paired without rematches; otherwise try the next candidate up.
+      var cands = order.slice().reverse().filter(function (id) { return !hadBye(state, id); });
+      if (!cands.length) cands = [order[order.length - 1]];
+      for (var c = 0; c < cands.length && !pairs; c++) {
+        pairs = swPair(state, without(order, cands[c]), false);
+        if (pairs) byeId = cands[c];
       }
+      if (!pairs) { byeId = cands[0]; pairs = swPair(state, without(order, byeId), true); }
+    } else {
+      pairs = swPair(state, order, false) || swPair(state, order, true);
     }
+    if (byeId != null) matches.push({ id: 'm' + (++mc), p1: byeId, p2: null, winner: byeId, score: null, bye: true });
+    pairs.forEach(function (p) { matches.push(mkMatch(++mc, p[0], p[1])); });
     state.rounds.push({ index: index, matches: matches });
+  }
+  function without(arr, id) { return arr.filter(function (x) { return x !== id; }); }
+  // Pair players in standings order: the top remaining player takes the closest-ranked
+  // opponent they haven't played, backtracking when that leaves the rest unpairable
+  // (plain greedy got stuck and forced avoidable rematches). allowRematch=true is the
+  // fallback when no rematch-free pairing exists: unplayed opponents are still preferred.
+  function swPair(state, pool, allowRematch) {
+    var budget = 20000, played = {};
+    eachMatch(state, function (m) { if (!m.bye && m.p2 != null) played[m.p1 + '|' + m.p2] = played[m.p2 + '|' + m.p1] = true; });
+    function met(a, b) { return !!played[a + '|' + b]; }
+    function rec(rest) {
+      if (!rest.length) return [];
+      if (--budget < 0) return null;
+      var a = rest[0], others = rest.slice(1);
+      var tryOrder = others.filter(function (b) { return !met(a, b); });
+      if (allowRematch) tryOrder = tryOrder.concat(others.filter(function (b) { return met(a, b); }));
+      for (var i = 0; i < tryOrder.length; i++) {
+        var sub = rec(without(others, tryOrder[i]));
+        if (sub) return [[a, tryOrder[i]]].concat(sub);
+      }
+      return null;
+    }
+    var res = rec(pool);
+    if (!res && allowRematch) { // budget exhausted: plain adjacent pairing
+      res = [];
+      for (var i = 0; i + 1 < pool.length; i += 2) res.push([pool[i], pool[i + 1]]);
+    }
+    return res;
+  }
+  function roundIndexOf(state, matchId) {
+    for (var r = 0; r < state.rounds.length; r++) {
+      if (state.rounds[r].matches.some(function (m) { return m.id === matchId; })) return r;
+    }
+    return -1;
+  }
+  // true if any round after `ri` has a decided (non-bye) match
+  function laterResults(state, ri) {
+    return state.rounds.slice(ri + 1).some(function (rd) {
+      return rd.matches.some(function (m) { return !m.bye && m.winner != null; });
+    });
   }
   function swRecord(state, participants, matchId, winnerId, score) {
     var m = findMatch(state, matchId);
     if (!m || m.bye) return state;
     if (winnerId !== m.p1 && winnerId !== m.p2) return state;
     m.winner = winnerId; m.score = score || null;
+    // Changing an earlier round while later rounds have no results yet: those pairings
+    // were based on the old standings, so drop them and re-pair from this round.
+    var ri = roundIndexOf(state, matchId);
+    if (ri < state.rounds.length - 1 && !laterResults(state, ri)) {
+      state.rounds = state.rounds.slice(0, ri + 1);
+      state.completed = false; state.champion = null;
+    }
     var cur = state.rounds[state.rounds.length - 1];
     var done = cur.matches.every(function (x) { return x.winner != null; });
     if (done) {
@@ -348,30 +399,31 @@
         swGenerate(state, participants, state.rounds.length + 1);
       } else {
         state.completed = true;
-        var st = tallyStandings(state, participants);
+        var st = swStandings(state, participants);
         state.champion = st.length ? st[0].playerId : null;
       }
     }
     return state;
   }
   function swUndo(state, participants, matchId) {
-    var ri = -1;
-    for (var r = 0; r < state.rounds.length; r++) {
-      if (state.rounds[r].matches.some(function (m) { return m.id === matchId; })) { ri = r; break; }
-    }
+    var ri = roundIndexOf(state, matchId);
     if (ri < 0) return state;
-    state.rounds = state.rounds.slice(0, ri + 1);
     var m = findMatch(state, matchId);
-    if (m) { m.winner = null; m.score = null; }
+    if (!m || m.bye) return state;
+    state.rounds = state.rounds.slice(0, ri + 1);
+    m.winner = null; m.score = null;
     state.completed = false; state.champion = null;
     return state;
   }
+  function swStandings(state, participants) { return tallyStandings(state, participants, { buchholz: true }); }
   var swiss = {
     init: swInit, recordResult: swRecord, undoResult: swUndo,
-    standings: tallyStandings,
+    standings: swStandings,
     isComplete: function (s) { return s.completed; },
-    champion: function (s, p) { return s.completed ? tallyStandings(s, p)[0].playerId : null; },
-    view: function (s) { return { type: 'rounds', rounds: s.rounds }; }
+    champion: function (s, p) { return s.completed ? swStandings(s, p)[0].playerId : null; },
+    view: function (s) { return { type: 'rounds', rounds: s.rounds }; },
+    // UI asks for confirmation before an undo that would discard later rounds' results
+    undoDropsResults: function (s, matchId) { var ri = roundIndexOf(s, matchId); return ri >= 0 && laterResults(s, ri); }
   };
 
   function setScore(state, matchId, score) {

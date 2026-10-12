@@ -344,3 +344,94 @@ test('standings: higher wins always ranks first (fuzzed swiss)', () => {
     }
   }
 });
+
+function playSwiss(sw, P, rounds, pick) {
+  let s = sw.init(P, { rounds });
+  while (!s.completed) {
+    const m = s.rounds[s.rounds.length - 1].matches.find(x => x.winner == null);
+    s = sw.recordResult(s, P, m.id, pick(m));
+  }
+  return s;
+}
+
+test('swiss: a rematch only happens when no rematch-free pairing exists for that round', () => {
+  const sw = BBEngines.get('swiss');
+  const U = BBEngines._util;
+  function canPair(pool, prev) {
+    if (!pool.length) return true;
+    for (let i = 1; i < pool.length; i++) {
+      if (!U.havePlayed(prev, pool[0], pool[i]) && canPair(pool.filter((_, k) => k !== 0 && k !== i), prev)) return true;
+    }
+    return false;
+  }
+  for (let it = 0; it < 300; it++) {
+    const P = ps(4 + (it % 7));
+    const s = playSwiss(sw, P, 5, m => (Math.random() < 0.5 ? m.p1 : m.p2));
+    s.rounds.forEach((rd, r) => {
+      const prev = { rounds: s.rounds.slice(0, r) };
+      const real = rd.matches.filter(m => !m.bye);
+      if (real.some(m => U.havePlayed(prev, m.p1, m.p2))) {
+        assert.ok(!canPair(real.flatMap(m => [m.p1, m.p2]), prev), 'avoidable rematch in round ' + (r + 1));
+      }
+    });
+  }
+});
+
+test('swiss: odd players never get a second bye while someone has none', () => {
+  const sw = BBEngines.get('swiss');
+  for (let it = 0; it < 100; it++) {
+    const s = playSwiss(sw, ps(5), 5, m => (Math.random() < 0.5 ? m.p1 : m.p2));
+    const byes = s.rounds.map(rd => rd.matches.find(m => m.bye).p1);
+    assert.equal(new Set(byes).size, 5);
+  }
+});
+
+test('swiss: re-picking an earlier winner re-pairs later rounds that have no results', () => {
+  const sw = BBEngines.get('swiss');
+  const P = ps(4);
+  let s = sw.init(P, { rounds: 3 });
+  const r1 = s.rounds[0].matches;
+  s = sw.recordResult(s, P, r1[0].id, r1[0].p1);
+  s = sw.recordResult(s, P, r1[1].id, r1[1].p1);
+  assert.equal(s.rounds.length, 2);
+  const before = s.rounds[1].matches.map(m => m.p1 + m.p2).join();
+  s = sw.recordResult(s, P, r1[0].id, r1[0].p2); // flip round-1 result
+  assert.equal(s.rounds.length, 2);
+  const winners = [r1[0].p2, r1[1].p1].sort();
+  const top = s.rounds[1].matches.find(m => winners.includes(m.p1) && winners.includes(m.p2));
+  assert.ok(top, 'round 2 pairs the two new 1-0 players: ' + before);
+});
+
+test('swiss: undo on a bye is ignored; undoDropsResults flags later results', () => {
+  const sw = BBEngines.get('swiss');
+  const P = ps(3);
+  let s = sw.init(P, { rounds: 2 });
+  const bye = s.rounds[0].matches.find(m => m.bye);
+  s = sw.undoResult(s, P, bye.id);
+  assert.equal(bye.winner, bye.p1);
+  const real = s.rounds[0].matches.find(m => !m.bye);
+  s = sw.recordResult(s, P, real.id, real.p1);
+  assert.equal(sw.undoDropsResults(s, real.id), false);
+  const r2 = s.rounds[1].matches.find(m => !m.bye);
+  s = sw.recordResult(s, P, r2.id, r2.p1);
+  assert.equal(sw.undoDropsResults(s, real.id), true);
+});
+
+test('swiss: 對手分 (Buchholz) ranks right after wins; round robin has none', () => {
+  const sw = BBEngines.get('swiss');
+  const M = (id, a, b, w) => ({ id, p1: a, p2: b, winner: w, score: null, bye: false });
+  // R1: p1>p3, p2>p4   R2: p3>p4  => p1, p2, p3 all have 1 win
+  // 對手分: p1 = p3's 1 win = 1, p3 = p1(1)+p4(0) = 1, p2 = p4's 0 wins = 0
+  // p2 drops below on 對手分; p1 vs p3 tie on 對手分 and p1 beat p3 head-to-head
+  const state = { format: 'swiss', options: { rounds: 2 }, completed: false, champion: null, rounds: [
+    { index: 1, matches: [M('m1', 'p1', 'p3', 'p1'), M('m2', 'p2', 'p4', 'p2')] },
+    { index: 2, matches: [M('m3', 'p3', 'p4', 'p3')] }
+  ] };
+  const P = ps(4);
+  // input order puts p2 first; diff is 0 for all, so the order comes from the tiebreaks
+  const rows = sw.standings(state, [P[1], P[0], P[2], P[3]]);
+  assert.deepEqual(rows.map(r => r.playerId), ['p1', 'p3', 'p2', 'p4']);
+  assert.deepEqual(rows.map(r => r.buchholz), [1, 1, 0, 2]);
+  const rr = BBEngines.get('round_robin').standings(state, P);
+  assert.equal(rr[0].buchholz, undefined);
+});
