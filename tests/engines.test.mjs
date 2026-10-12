@@ -300,3 +300,47 @@ test('single elim: changing a decided semifinal winner updates the final matchup
   assert.equal(st.rounds[1].matches[0].p1, sf1.p2);
   assert.notEqual(st.rounds[1].matches[0].p1, finalP1Before);
 });
+
+test('standings: 3-way head-to-head cycle falls through to diff, independent of input order', () => {
+  const sw = BBEngines.get('swiss');
+  const players = ps(3);
+  // A beat B 4-3, B beat C 4-3, C beat A 4-0 -> all 1-1, h2h 1 each; diffs: A -3, B 0, C +3
+  const state = { format: 'swiss', options: { rounds: 3 }, completed: true, champion: null, rounds: [
+    { index: 1, matches: [{ id: 'm1', p1: 'p1', p2: 'p2', winner: 'p1', score: [4, 3], bye: false }] },
+    { index: 2, matches: [{ id: 'm2', p1: 'p2', p2: 'p3', winner: 'p2', score: [4, 3], bye: false }] },
+    { index: 3, matches: [{ id: 'm3', p1: 'p3', p2: 'p1', winner: 'p3', score: [4, 0], bye: false }] }
+  ] };
+  [players, players.slice().reverse(), [players[1], players[2], players[0]]].forEach(order => {
+    const rows = sw.standings(state, order);
+    assert.deepEqual(rows.map(r => r.playerId), ['p3', 'p2', 'p1']);
+  });
+});
+
+test('standings: two-way tie still decided by head-to-head before diff', () => {
+  const rr = BBEngines.get('round_robin');
+  const state = { format: 'round_robin', options: {}, completed: false, champion: null, rounds: [
+    { index: 1, matches: [{ id: 'm1', p1: 'p1', p2: 'p2', winner: 'p1', score: [4, 3], bye: false },
+                          { id: 'm2', p1: 'p3', p2: 'p4', winner: 'p3', score: [4, 0], bye: false }] },
+    { index: 2, matches: [{ id: 'm3', p1: 'p2', p2: 'p4', winner: 'p2', score: [4, 0], bye: false },
+                          { id: 'm4', p1: 'p3', p2: 'p1', winner: 'p3', score: [4, 0], bye: false }] }
+  ] };
+  // p1 1-1 (diff -3), p2 1-1 (diff +3); p1 beat p2 -> p1 ahead
+  const rows = rr.standings(state, ps(4));
+  assert.deepEqual(rows.map(r => r.playerId), ['p3', 'p1', 'p2', 'p4']);
+});
+
+test('standings: higher wins always ranks first (fuzzed swiss)', () => {
+  const sw = BBEngines.get('swiss');
+  for (let it = 0; it < 300; it++) {
+    const P = ps(3 + (it % 10));
+    let s = sw.init(P, { rounds: 4 });
+    while (!s.completed) {
+      const m = s.rounds[s.rounds.length - 1].matches.find(x => x.winner == null);
+      s = sw.recordResult(s, P, m.id, Math.random() < 0.5 ? m.p1 : m.p2, [4, Math.floor(Math.random() * 4)]);
+    }
+    const st = sw.standings(s, P);
+    for (let i = 1; i < st.length; i++) {
+      assert.ok(st[i].wins <= st[i - 1].wins);
+    }
+  }
+});

@@ -91,10 +91,21 @@
       var played = (r.wins - r.byes) + r.losses; // real games only
       r.winPct = played ? (r.wins - r.byes) / played : 0;
     });
+    // Head-to-head tiebreak = mini-league among players tied on wins (count of wins
+    // against the other tied players). A pairwise comparator is not transitive: with a
+    // cycle (A>B, B>C, C>A) the result depended on input order and ignored diff.
+    rows.forEach(function (r) { r.h2h = 0; });
+    eachMatch(state, function (m) {
+      if (m.bye || m.winner == null) return;
+      var w = m.winner, l = (m.p1 === w ? m.p2 : m.p1);
+      if (!map[w] || !map[l] || map[w].wins !== map[l].wins) return;
+      map[w].h2h++;
+    });
     rows.sort(function (a, b) {
-      return (b.wins - a.wins) || headToHead(state, a.playerId, b.playerId) ||
+      return (b.wins - a.wins) || (b.h2h - a.h2h) ||
              (b.diff - a.diff) || a.name.localeCompare(b.name);
     });
+    rows.forEach(function (r) { delete r.h2h; });
     rows.forEach(function (r, i) { r.rank = i + 1; });
     return rows;
   }
