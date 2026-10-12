@@ -94,43 +94,58 @@
     openTournament(nt.id);
     if (window.toast) toast('已用相同名單開新一場');
   }
+  var ICON_EDIT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  var ICON_UNDO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>';
+  var ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
   function renderStandings(t) {
     var eng = BBEngines.get(t.format);
     var rows = eng.standings(t.state, t.participants);
     var champ = eng.champion(t.state, t.participants);
-    var html = '<table class="sttable"><thead><tr>' +
-      '<th>#</th><th>選手</th><th>勝-敗</th><th>勝率</th><th>積分差</th></tr></thead><tbody>';
+    var bh = rows.length && rows[0].buchholz !== undefined; // 瑞士制才有對手分
+    var html = '<div class="stwrap"><table class="sttable"><thead><tr>' +
+      '<th class="strk">#</th><th class="stname">選手</th><th>勝-敗</th>' +
+      (bh ? '<th title="所有對手的勝場加總">對手分</th>' : '') + '<th>勝率</th><th>積分差</th></tr></thead><tbody>';
     rows.forEach(function (r) {
+      var real = (r.wins - (r.byes || 0)) + r.losses;
+      var rk = r.rank <= 3 ? ' r' + r.rank : '';
+      var diffCls = r.diff > 0 ? 'pos' : r.diff < 0 ? 'neg' : '';
       html += '<tr class="' + (r.playerId === champ ? 'champrow' : '') + '">' +
-        '<td>' + r.rank + '</td>' +
-        '<td class="stname">' + esc(r.name) + '</td>' +
-        '<td>' + r.wins + '-' + r.losses + '</td>' +
-        '<td>' + Math.round(r.winPct * 100) + '%</td>' +
-        '<td>' + (r.diff > 0 ? '+' : '') + r.diff + '</td></tr>';
+        '<td class="strk"><span class="rk' + rk + '">' + r.rank + '</span></td>' +
+        '<td class="stname">' + esc(r.name) + (r.playerId === champ ? ' <span class="sttag">冠軍</span>' : '') + '</td>' +
+        '<td class="stwl"><b>' + r.wins + '</b><i>-</i><span>' + r.losses + '</span></td>' +
+        (bh ? '<td class="stnum">' + r.buchholz + '</td>' : '') +
+        // 只有輪空、尚無實際對戰時勝率顯示「—」,避免出現「1-0 / 0%」
+        '<td class="stnum">' + (real ? Math.round(r.winPct * 100) + '%' : '—') + '</td>' +
+        '<td class="stnum ' + diffCls + '">' + (r.diff > 0 ? '+' : '') + r.diff + '</td></tr>';
     });
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     document.getElementById('tStandings').innerHTML = html;
   }
   function matchRowHtml(t, m) {
     if (m.bye) {
-      return '<div class="matchrow"><span class="mbye">' + esc(nameOf(t, m.p1)) + ' — 輪空(自動晉級)</span></div>';
+      return '<div class="mcard bye"><span class="mbye"><b>' + esc(nameOf(t, m.p1)) + '</b>輪空・自動晉級</span></div>';
     }
     var decided = m.winner != null;
-    function nameCell(pid, isWin, right) {
-      var clickable = pid != null;
-      var cls = 'mname' + (isWin ? ' win' : '') + (clickable ? ' pick' : '');
-      var attr = clickable ? ' data-pick="' + m.id + '|' + pid + '"' : '';
-      return '<div class="mside' + (right ? ' right' : '') + '"><span class="' + cls + '"' + attr + '>' +
-        esc(nameOf(t, pid)) + '</span></div>';
+    // m.score 是 [勝方, 敗方];換成 p1 / p2 的順序顯示
+    var sc = m.score ? (m.winner === m.p1 ? m.score : [m.score[1], m.score[0]]) : null;
+    function side(pid, i) {
+      var isWin = decided && m.winner === pid, isLose = decided && !isWin;
+      var cls = 'mplayer' + (i ? ' right' : '') + (isWin ? ' win' : '') + (isLose ? ' lose' : '') + (pid != null ? ' pick' : '');
+      var label = nameOf(t, pid) + (isWin ? '(勝)' : decided ? '' : ',點選設為勝方');
+      return '<button type="button" class="' + cls + '"' + (pid != null ? ' data-pick="' + m.id + '|' + pid + '"' : ' disabled') +
+        ' aria-pressed="' + isWin + '" aria-label="' + esc(label) + '">' +
+        '<span class="mpname">' + esc(nameOf(t, pid)) + '</span>' +
+        (isWin ? '<span class="mptag">' + ICON_CHECK + 'WIN</span>' : '') + '</button>';
     }
-    var scoreTxt = m.score ? m.score[0] + '-' + m.score[1] : 'VS';
+    var mid = sc
+      ? '<span class="mscore"><b class="' + (m.winner === m.p1 ? 'w' : '') + '">' + sc[0] + '</b><i>:</i><b class="' + (m.winner === m.p2 ? 'w' : '') + '">' + sc[1] + '</b></span>'
+      : '<span class="mvs">VS</span>';
     var tools = decided
-      ? ' <button class="miconbtn" data-score="' + m.id + '" title="比分">✎</button>' +
-        '<button class="miconbtn" data-undo="' + m.id + '" title="清除">↺</button>'
+      ? '<div class="mtools"><button type="button" class="mtool" data-score="' + m.id + '">' + ICON_EDIT + (m.score ? '改比分' : '填比分') + '</button>' +
+        '<button type="button" class="mtool" data-undo="' + m.id + '">' + ICON_UNDO + '清除</button></div>'
       : '';
-    var mid = '<span class="mvs">' + scoreTxt + tools + '</span>';
-    return '<div class="matchrow">' + nameCell(m.p1, m.winner === m.p1, false) + mid +
-      nameCell(m.p2, m.winner === m.p2, true) + '</div>';
+    return '<div class="mcard' + (decided ? ' done' : '') + '"><div class="mrow">' + side(m.p1, 0) + '<div class="mmid">' + mid + '</div>' +
+      side(m.p2, 1) + '</div>' + tools + '</div>';
   }
   function wireMatchControls(box, id) {
     if (readOnly) return;
@@ -149,10 +164,19 @@
   }
   function renderMatches(t) {
     var box = document.getElementById('tMatches');
-    box.innerHTML = t.state.rounds.map(function (rd) {
-      return '<div class="rnd"><div class="rndh">第 ' + rd.index + ' 輪</div>' +
-        rd.matches.map(function (m) { return matchRowHtml(t, m); }).join('') + '</div>';
+    var last = t.state.rounds.length - 1;
+    var anyDecided = false;
+    var html = t.state.rounds.map(function (rd, ri) {
+      var real = rd.matches.filter(function (m) { return !m.bye; });
+      var done = real.filter(function (m) { return m.winner != null; }).length;
+      if (done) anyDecided = true;
+      var complete = done === real.length;
+      var chip = complete ? '<span class="rchip ok">' + ICON_CHECK + '完成</span>'
+        : '<span class="rchip live">' + done + ' / ' + real.length + (ri === last ? '・進行中' : '') + '</span>';
+      return '<section class="rnd' + (complete ? ' complete' : '') + '"><div class="rndh"><span>第 ' + rd.index + ' 輪</span>' + chip + '</div>' +
+        rd.matches.map(function (m) { return matchRowHtml(t, m); }).join('') + '</section>';
     }).join('');
+    box.innerHTML = (anyDecided || readOnly ? '' : '<p class="mhint">點選手名字即可選出勝方</p>') + html;
     wireMatchControls(box, t.id);
   }
   var scoreCtx = null;
@@ -174,6 +198,7 @@
     if (t) {
       var s = [parseInt(document.getElementById('seP1').value, 10) || 0,
                parseInt(document.getElementById('seP2').value, 10) || 0];
+      if (s[0] < 0 || s[1] < 0 || s[0] <= s[1]) { if (window.toast) toast('勝方分數要大於敗方'); return; }
       BBEngines.setScore(t.state, scoreCtx.matchId, s);
       upsert(t); renderDetail(scoreCtx.id);
     }
@@ -266,8 +291,15 @@
   function undo(id, matchId) {
     var t = getById(id); if (!t) return;
     var eng = BBEngines.get(t.format);
-    t.state = eng.undoResult(t.state, t.participants, matchId);
-    upsert(t); renderDetail(id);
+    var go = function () {
+      t.state = eng.undoResult(t.state, t.participants, matchId);
+      upsert(t); renderDetail(id);
+    };
+    // 瑞士制:清除較早輪次的結果會連帶刪掉之後輪次(配對依戰績產生),先確認
+    if (eng.undoDropsResults && eng.undoDropsResults(t.state, matchId)) {
+      (window.askConfirm ? askConfirm('清除這場會一併刪除之後輪次的所有對戰結果,確定?', '清除') : Promise.resolve(confirm('確定?')))
+        .then(function (ok) { if (ok) go(); });
+    } else go();
   }
   var openId = null;
   function openTournament(id) { openId = id; renderDetail(id); showScreen('tournament'); }

@@ -438,23 +438,76 @@ body[data-screen="battle"] #fsBtn{display:none}
 .fbcard .fbdel{background:none;border:1px solid rgba(255,80,80,.5);color:#ff8080;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:13px}
 .fbempty{color:#9adf9f;text-align:center;padding:30px 10px;letter-spacing:.1em}
 /* standings table */
-.sttable{width:100%;border-collapse:collapse;font-size:15px;overflow-x:auto;display:block}
-.sttable th,.sttable td{padding:8px 10px;text-align:center;white-space:nowrap}
-.sttable thead th{color:var(--neon);text-shadow:var(--neon-glow);border-bottom:1px solid rgba(0,255,160,.4);letter-spacing:.15em;font-size:13px}
-.sttable tbody tr:nth-child(odd){background:rgba(0,50,32,.3)}
-.sttable td.stname{text-align:left;color:#eafff2}
-.sttable tr.champrow{background:rgba(255,215,0,.15)!important}
-.sttable tr.champrow td{color:#ffe66a}
+.stwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(53,232,58,.28);border-radius:12px;
+  background:linear-gradient(180deg,rgba(4,30,14,.75),rgba(2,14,7,.75));margin-bottom:6px}
+.sttable{width:100%;border-collapse:collapse;font-size:16px;font-variant-numeric:tabular-nums}
+.sttable th,.sttable td{padding:11px 8px;text-align:center;white-space:nowrap}
+.sttable thead th{color:#8fdc96;font-weight:600;font-size:12px;letter-spacing:.12em;border-bottom:1px solid rgba(53,232,58,.35);background:rgba(53,232,58,.06)}
+.sttable tbody tr+tr td{border-top:1px solid rgba(53,232,58,.1)}
+.sttable th.strk,.sttable td.strk{width:44px;padding-left:12px}
+.sttable .stname{text-align:left;color:#eafff2;font-weight:600;width:100%}
+.rk{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+  font-family:var(--font-num);font-weight:700;font-size:14px;color:#bfeec3;border:1px solid rgba(53,232,58,.3)}
+.rk.r1{background:linear-gradient(135deg,#ffe98a,#e0a400);color:#2a1d00;border:none;box-shadow:0 0 10px rgba(255,200,40,.55)}
+.rk.r2{background:linear-gradient(135deg,#f2f6f8,#9aa6ad);color:#1b2226;border:none}
+.rk.r3{background:linear-gradient(135deg,#f0b27a,#a8602a);color:#2a1406;border:none}
+.stwl b{color:var(--neon);font-weight:700}
+.stwl i{color:#4f7a58;font-style:normal;margin:0 3px}
+.stwl span{color:#ff9aa4}
+.stnum{color:#d6f5d9;font-family:var(--font-num)}
+.stnum.pos{color:var(--neon)}
+.stnum.neg{color:#ff9aa4}
+.sttag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;letter-spacing:.1em;
+  color:#2a1d00;background:#ffd84a;vertical-align:2px}
+.sttable tr.champrow td{background:rgba(255,215,0,.08)}
 /* matches */
-.rnd{margin-bottom:16px}
-.rndh{color:var(--neon);letter-spacing:.2em;font-size:14px;margin:8px 0}
-.matchrow{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px dashed rgba(0,255,160,.18)}
-.mside{flex:1;display:flex;align-items:center;gap:6px;min-width:0}
-.mside.right{justify-content:flex-end}
-.mname{color:#eafff2;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mname.win{color:#7dffb0;font-weight:700}
-.mvs{color:#5f8f74;font-size:12px}
-.mbye{color:#9adf9f;font-size:14px;font-style:italic}
+.mhint{color:#9adf9f;font-size:14px;text-align:center;margin:0 0 12px;letter-spacing:.08em}
+.rnd{margin-bottom:22px}
+.rndh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 10px;
+  color:var(--neon);font-size:15px;font-weight:700;letter-spacing:.2em}
+.rchip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12px;letter-spacing:.08em;font-weight:600}
+.rchip svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.rchip.ok{color:#031006;background:var(--neon)}
+.rchip.live{color:var(--amber);border:1px solid rgba(255,184,48,.55)}
+.mcard{border:1px solid rgba(53,232,58,.25);border-radius:12px;background:rgba(3,22,11,.7);padding:8px;margin-bottom:10px;
+  transition:border-color .2s ease}
+.mcard.done{border-color:rgba(53,232,58,.45)}
+.rnd.complete .mcard{background:rgba(3,18,9,.55)}
+.mrow{display:flex;align-items:stretch;gap:8px}
+.mplayer{flex:1;min-width:0;min-height:52px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;
+  padding:8px 12px;border-radius:9px;border:1px solid rgba(53,232,58,.3);background:rgba(53,232,58,.04);color:#eafff2;
+  text-align:left;touch-action:manipulation;transition:background .18s ease,border-color .18s ease,opacity .18s ease,transform .1s ease}
+.mplayer.right{align-items:flex-end;text-align:right}
+.mplayer.pick{cursor:pointer}
+.mplayer.pick:hover{border-color:var(--neon);background:rgba(53,232,58,.1)}
+.mplayer.pick:active{transform:scale(.97)}
+.mplayer:focus-visible,.mtool:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+.mpname{max-width:100%;font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mplayer.win{border-color:var(--neon);background:linear-gradient(135deg,rgba(53,232,58,.32),rgba(53,232,58,.1));box-shadow:0 0 12px rgba(53,232,58,.3)}
+.mplayer.win .mpname{color:#fff}
+.mplayer.lose{opacity:.5}
+.mplayer.lose .mpname{font-weight:400}
+.mptag{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;letter-spacing:.15em;color:var(--neon)}
+.mptag svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.mmid{flex:0 0 auto;min-width:54px;display:flex;align-items:center;justify-content:center}
+.mvs{color:#5f9a6c;font-size:14px;font-weight:800;font-style:italic;letter-spacing:.1em}
+.mscore{display:flex;align-items:center;gap:4px;font-family:var(--font-num);font-size:22px;font-weight:700;color:#7fa886}
+.mscore b.w{color:var(--neon);text-shadow:var(--neon-glow)}
+.mscore i{font-style:normal;color:#4f7a58;font-size:16px}
+.mtools{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.mtool{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:8px;font-size:13px;
+  color:#9adf9f;border:1px solid rgba(53,232,58,.28);touch-action:manipulation;transition:border-color .18s ease,color .18s ease}
+.mtool:hover{border-color:var(--neon);color:#eafff2}
+.mtool svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mcard.bye{border-style:dashed;background:transparent;padding:12px}
+.mbye{color:#9adf9f;font-size:14px;letter-spacing:.05em}
+.mbye b{color:#eafff2;margin-right:8px;font-weight:600}
+@media (prefers-reduced-motion:reduce){.mplayer,.mtool,.mcard{transition:none}.mplayer.pick:active{transform:none}}
+#tournament{padding-bottom:110px}
+@media (min-width:900px){
+  .rnd{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;align-items:start}
+  .rndh,.mcard.bye{grid-column:1/-1}
+}
 .champbanner{border:1px solid rgba(255,215,0,.6);background:rgba(255,215,0,.12);color:#ffe66a;
   border-radius:12px;padding:12px;text-align:center;letter-spacing:.2em;margin-bottom:14px;font-size:18px}
 /* wizard */
@@ -476,8 +529,6 @@ body[data-screen="battle"] #fsBtn{display:none}
 /* ====== 自由對戰 v2:括號圖 / 比分 / 響應式 ====== */
 .miconbtn{background:none;border:1px solid rgba(0,255,160,.4);color:#9adf9f;border-radius:6px;cursor:pointer;font-size:12px;padding:1px 6px;line-height:1.5}
 .miconbtn:hover{border-color:var(--neon);color:#eafff2}
-.mname.pick{cursor:pointer;border-bottom:1px dotted rgba(0,255,160,.4)}
-.mname.pick:hover{color:#7dffb0}
 /* single-elim bracket */
 /* full-bleed scroll area: breaks out of the 900px column so the bracket can use the
    whole viewport width instead of being crammed into the centered container */
@@ -515,8 +566,9 @@ body[data-screen="battle"] #fsBtn{display:none}
 .livestatus{display:none;text-align:center;font-size:13px;color:#9adf9f;margin:-4px 0 10px}
 body.liveview .livestatus{display:block}
 .livestatus.on{color:var(--danger)}
-body.liveview #tBackBtn,body.liveview #tRematchBtn,body.liveview #tShareBtn,body.liveview .miconbtn,body.liveview .btools{display:none}
+body.liveview #tBackBtn,body.liveview #tRematchBtn,body.liveview #tShareBtn,body.liveview .miconbtn,body.liveview .btools,body.liveview .mtools{display:none}
 body.liveview .pick{cursor:default;border-bottom:none;pointer-events:none}
+body.liveview .mplayer.pick{background:rgba(53,232,58,.04)}
 .scorerow{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:14px 0}
 .scol{display:flex;flex-direction:column;align-items:center;gap:4px}
 .scol .snm{color:#9adf9f;font-size:13px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -524,17 +576,20 @@ body.liveview .pick{cursor:default;border-bottom:none;pointer-events:none}
 .sdash{color:#9adf9f;padding-bottom:6px}
 /* responsive */
 @media (max-width:768px){
-  #freebattle,#tournament{padding:0 8px 40px}
+  #freebattle{padding:0 8px 40px}
+  #tournament{padding:0 8px 110px}
   .bracket-scroll{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
   .bcol{min-width:112px}
 }
 @media (max-width:480px){
   .fbcard{flex-direction:column;align-items:flex-start;gap:6px}
   .fbcard .fbdel{align-self:flex-end}
-  .sttable{font-size:13px}
-  .sttable th,.sttable td{padding:6px 6px}
-  .matchrow{gap:4px}
-  .mname{font-size:13px}
+  .sttable{font-size:14px}
+  .sttable th,.sttable td{padding:9px 5px}
+  .mrow{gap:6px}
+  .mplayer{padding:8px 10px}
+  .mpname{font-size:15px}
+  .mmid{min-width:44px}
   .bpn{font-size:12px}
   .bcol{min-width:96px}
   .bcell{margin:6px}
@@ -730,7 +785,8 @@ body.liveview .pick{cursor:default;border-bottom:none;pointer-events:none}
   <details class="ruleitem"><summary>瑞士制(Swiss System)</summary>
     <div class="rbody">選手不會因輸一場就淘汰。每一輪系統會把<strong>戰績相近</strong>的人配成對手,打完固定輪數(常見 4～6 輪)後,依總勝場排名。
     <br>• 優點:人人都能打滿場數,強者容易相遇,公平又快。
-    <br>• 適合:報名人數多、時間有限的公開賽。</div>
+    <br>• 適合:報名人數多、時間有限的公開賽。
+    <br>• 同勝場時依序比:<strong>對手分</strong>(所有對手的勝場加總,代表對手強度)→ 同分者之間的對戰勝場 → 積分差。</div>
   </details>
 
   <details class="ruleitem"><summary>單淘汰(Single Elimination)</summary>
